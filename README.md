@@ -11,7 +11,6 @@ module.exports = {
   hostname: 'https://example.com',              // Hostname that serves files in workingDirectory
   workingDirectory: './data',                   // Directory that stores videos and rss files
   apiKey: 'YOUTUBE_API_KEY',
-  fetchSize: 15,                                // Maximum number of videos to search for per feed
   maxEpisodes: 3,                               // Maximum number of videos to keep per feed
   refreshInterval: 3,                           // Interval for updating feeds (in hours)
   feeds: [

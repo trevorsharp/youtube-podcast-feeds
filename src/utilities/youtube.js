@@ -33,7 +33,6 @@ async function getVideosByPlaylistId(playlistId) {
     .list({
       part: 'snippet',
       playlistId: playlistId,
-      maxResults: config.fetchSize,
     })
     .then((response) =>
       response.data.items.map((item) => ({
