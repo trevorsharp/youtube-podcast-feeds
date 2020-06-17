@@ -33,15 +33,17 @@ async function getVideosByPlaylistId(playlistId) {
     .list({
       part: 'snippet',
       playlistId: playlistId,
-      maxResults: config.fetchLimit,
+      maxResults: 15,
     })
     .then((response) =>
-      response.data.items.map((item) => ({
-        id: item.snippet.resourceId.videoId,
-        title: item.snippet.title,
-        description: item.snippet.description,
-        date: item.snippet.publishedAt,
-      }))
+      response.data.items.map((item) =>
+        ({
+          id: item.snippet.resourceId.videoId,
+          title: item.snippet.title,
+          description: item.snippet.description,
+          date: item.snippet.publishedAt,
+        }.slice(0, 3))
+      )
     );
 
   return videos;
