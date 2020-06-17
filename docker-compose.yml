@@ -1,0 +1,10 @@
+version: '3'
+services:
+  youtube-podcast-feeds:
+    build:
+      context: .
+    image: youtube-podcast-feeds:latest
+    container_name: youtube-podcast-feeds
+    restart: always
+    volumes:
+      - ./data:/data
