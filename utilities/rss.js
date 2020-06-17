@@ -21,7 +21,7 @@ function generateRssFeed(feed, directory) {
   );
 
   if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory);
+    fs.mkdirSync(directory, { recursive: true });
   }
 
   const file = `${directory}/rss.xml`;

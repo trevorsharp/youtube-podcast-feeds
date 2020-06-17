@@ -1,6 +1,7 @@
 const config = require('../config');
 const youtube = require('./youtube');
 const downloader = require('./downloader');
+const cleanup = require('./cleanup');
 const rss = require('./rss');
 
 async function updateFeeds() {
@@ -27,6 +28,9 @@ async function updateFeeds() {
   feeds.map((feed) =>
     rss.generateRssFeed(feed, `${config.workingDirectory}/${feed.id}`)
   );
+
+  // Cleanup old content
+  cleanup.removeOldContent(feeds);
 
   // Download new content
   feeds.map((feed) =>

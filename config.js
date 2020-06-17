@@ -2,6 +2,8 @@ module.exports = {
   hostname: 'https://yourdomain.com',
   workingDirectory: './data',
   apiKey: 'put-your-youtube-api-key-here',
+  fetchSize: 15,
+  maxEpisodes: 1,
   feeds: [
     {
       id: 'h3podcast',
