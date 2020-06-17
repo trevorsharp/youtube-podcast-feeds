@@ -30,7 +30,7 @@ Create video podcast rss feeds for youtube channels, users, or playlists
 - __apiKey__ - YouTube API V3 Key
 - __maxEpisodes__ - Maximum number of videos to keep per feed
 - __refreshInterval__ - Interval for updating feeds (in hours)
-- __feed.id__ - Unique identifier for the feed (RSS will be served at https://hostname/FEED-ID/rss.xml)
+- __feed.id__ - Unique identifier for the feed (RSS will be served at hostname/FEED-ID/rss.xml)
 - __feed.title__ - Name of RSS feed
 
 ### Use One Per Feed
