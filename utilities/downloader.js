@@ -1,4 +1,3 @@
-const readline = require('readline');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -16,11 +15,9 @@ function downloadContent(videoId, directory) {
   }
   if (!fs.existsSync(file)) {
     ytdl(url, { quality: 'highestaudio' })
-      .on('progress', onProgress)
       .pipe(fs.createWriteStream(file))
       .on('finish', () => {
         const video = ytdl(url, { quality: 'highestvideo' });
-        video.on('progress', onProgress);
         ffmpeg()
           .input(video)
           .videoCodec('copy')
@@ -35,14 +32,5 @@ function downloadContent(videoId, directory) {
       });
   }
 }
-
-const onProgress = (_, downloaded, total) => {
-  readline.cursorTo(process.stdout, 0);
-  process.stdout.write(
-    `Download Progress - ${(downloaded / 1073741824).toFixed(2)} of ${(
-      total / 1073741824
-    ).toFixed(2)} GB (${((downloaded / total) * 100).toFixed(2)}%)`
-  );
-};
 
 module.exports = { downloadContent };
