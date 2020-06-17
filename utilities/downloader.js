@@ -14,10 +14,16 @@ function downloadContent(videoId, directory) {
     fs.mkdirSync(directory, { recursive: true });
   }
   if (!fs.existsSync(file)) {
-    ytdl(url, { quality: 'highestaudio' })
+    ytdl(url, {
+      quality: 'highestaudio',
+      filter: (format) => format.container === 'mp4',
+    })
       .pipe(fs.createWriteStream(file))
       .on('finish', () => {
-        const video = ytdl(url, { quality: 'highestvideo' });
+        const video = ytdl(url, {
+          quality: 'highestvideo',
+          filter: (format) => format.container === 'mp4',
+        });
         ffmpeg()
           .input(video)
           .videoCodec('copy')
