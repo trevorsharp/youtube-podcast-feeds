@@ -21,7 +21,8 @@ module.exports = {
       channel: 'UCLtREJY21xRfCuEKvdki1Kw',      // Use channel, user, or playlist to specify source
       // user: "username",
       // playlist: "playlist_id",
-      regex: 'H3 Podcast #[0-9]+',              // Filter videos by title with matching regex
+      regex: 'H3 Podcast #[0-9]+',              // Filter videos by title with matching regex (Optional)
+      cleanTitle: "H3 Podcast ",                // Remove this string from episode titles (Optional)
     },
   ],
 };

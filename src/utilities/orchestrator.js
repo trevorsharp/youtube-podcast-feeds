@@ -21,6 +21,11 @@ async function updateFeeds() {
           .filter((video) =>
             feed.regex ? video.title.match(feed.regex) : true
           )
+          .map((video) =>
+            feed.cleanTitle
+              ? { ...video, title: video.title.replace(feed.cleanTitle, '') }
+              : video
+          )
           .slice(0, config.maxEpisodes),
       };
     })
