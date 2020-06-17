@@ -1,4 +1,5 @@
+const config = require('./config');
 const orchestrator = require('./utilities/orchestrator');
 
 orchestrator.updateFeeds();
-setInterval(orchestrator.updateFeeds, 1000 * 60 * 60);
+setInterval(orchestrator.updateFeeds, 3600000 * config.refreshInterval);

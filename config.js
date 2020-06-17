@@ -4,6 +4,7 @@ module.exports = {
   apiKey: 'put-your-youtube-api-key-here',
   fetchSize: 15,
   maxEpisodes: 1,
+  refreshInterval: 3,
   feeds: [
     {
       id: 'h3podcast',
