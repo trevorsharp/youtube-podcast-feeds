@@ -1,4 +1,4 @@
-const config = require('./config');
+const config = require('./config.json');
 const orchestrator = require('./utilities/orchestrator');
 
 orchestrator.updateFeeds();

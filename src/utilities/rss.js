@@ -1,4 +1,4 @@
-const config = require('../config');
+const config = require('../config.json');
 const fs = require('fs');
 const { Feed } = require('feed');
 

@@ -1,4 +1,4 @@
-const config = require('../config');
+const config = require('../config.json');
 const youtube = require('./youtube');
 const downloader = require('./downloader');
 const cleanup = require('./cleanup');
