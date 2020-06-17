@@ -17,9 +17,11 @@ async function updateFeeds() {
           (feed.playlist &&
             (await youtube.getVideosByPlaylistId(feed.playlist))) ||
           []
-        ).filter((video) =>
-          feed.regex ? video.title.match(feed.regex) : true
-        ),
+        )
+          .filter((video) =>
+            feed.regex ? video.title.match(feed.regex) : true
+          )
+          .slice(0, config.maxEpisodes),
       };
     })
   );
