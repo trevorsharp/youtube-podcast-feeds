@@ -7,4 +7,4 @@ services:
     container_name: youtube-podcast-feeds
     restart: always
     volumes:
-      - ./data:/data
+      - ./data:/usr/src/data

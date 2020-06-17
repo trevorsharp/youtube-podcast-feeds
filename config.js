@@ -1,6 +1,6 @@
 module.exports = {
   hostname: 'https://yourdomain.com',
-  workingDirectory: '/data',
+  workingDirectory: './data',
   apiKey: 'put-your-youtube-api-key-here',
   fetchLimit: 5,
   feeds: [

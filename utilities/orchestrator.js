@@ -23,6 +23,11 @@ async function updateFeeds() {
     })
   );
 
+  // Update RSS feeds
+  feeds.map((feed) =>
+    rss.generateRssFeed(feed, `${config.workingDirectory}/${feed.id}`)
+  );
+
   // Download new content
   feeds.map((feed) =>
     feed.videos.map((video) =>
@@ -31,11 +36,6 @@ async function updateFeeds() {
         `${config.workingDirectory}/${feed.id}/content`
       )
     )
-  );
-
-  // Update RSS feeds
-  feeds.map((feed) =>
-    rss.generateRssFeed(feed, `${config.workingDirectory}/${feed.id}`)
   );
 
   console.log(`${new Date().toLocaleString()} - Update Complete`);
