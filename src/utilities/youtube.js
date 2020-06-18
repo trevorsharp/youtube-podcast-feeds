@@ -1,4 +1,4 @@
-const config = require('../../config.json');
+const config = require('../config.js');
 const { google } = require('googleapis');
 
 const youtube = google.youtube({

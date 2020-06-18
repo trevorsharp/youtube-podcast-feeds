@@ -10,8 +10,8 @@ Create video podcast rss feeds for youtube channels, users, or playlists
 {
   "hostname" : "https://example.com",
   "apiKey" : "YOUTUBE_API_KEY",
+  "updateInterval" : 2,
   "maxEpisodes" : 10,
-  "refreshInterval" : 2,
   "feeds" : [
     {
       "id" : "h3podcast",
@@ -26,8 +26,8 @@ Create video podcast rss feeds for youtube channels, users, or playlists
 
 - **hostname** - Hostname that will serve the files in data folder
 - **apiKey** - YouTube API V3 Key
+- **updateInterval** - Interval for updating feeds (in hours)
 - **maxEpisodes** - Maximum number of videos to keep per feed
-- **refreshInterval** - Interval for updating feeds (in hours)
 - **feed.id** - Unique identifier for each feed (podcast RSS feed will be served at hostname/FEED-ID/rss.xml)
 - **feed.title** - Name of RSS feed
 

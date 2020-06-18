@@ -1,5 +1,11 @@
-const config = require('../config.json');
-const orchestrator = require('./utilities/orchestrator');
+const config = require('./config.js');
+const feedUpdater = require('./feedUpdater');
 
-orchestrator.runUpdate();
-setInterval(orchestrator.runUpdate, 3600000 * config.refreshInterval);
+const scheduledTask = async () => {
+  feedUpdater
+    .run()
+    .then(console.log(`${new Date().toISOString()} - Update Complete`));
+};
+
+scheduledTask();
+setInterval(scheduledTask, 3600000 * config.updateInterval);
