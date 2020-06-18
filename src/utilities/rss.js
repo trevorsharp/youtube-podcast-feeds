@@ -2,7 +2,7 @@ const config = require('../config.json');
 const fs = require('fs');
 const { Feed } = require('feed');
 
-function generateRssFeed(feed, directory) {
+const generateRssFeed = (feed, directory) => {
   const rssFeed = new Feed({
     title: feed.title,
     description: feed.title,
@@ -27,6 +27,6 @@ function generateRssFeed(feed, directory) {
   const file = `${directory}/rss.xml`;
   const contents = rssFeed.rss2();
   fs.writeFileSync(file, contents);
-}
+};
 
 module.exports = { generateRssFeed };

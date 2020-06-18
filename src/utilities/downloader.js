@@ -5,7 +5,7 @@ const ffmpeg = require('fluent-ffmpeg');
 
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-function downloadContent(videoId, directory) {
+const downloadContent = (videoId, directory) => {
   const file = `${directory}/${videoId}.mp4`;
   const videoOnlyFile = `${directory}/video-${videoId}.mp4`;
 
@@ -14,6 +14,7 @@ function downloadContent(videoId, directory) {
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory, { recursive: true });
   }
+
   if (!fs.existsSync(file)) {
     ytdl(url, {
       quality: 'highestaudio',
@@ -38,6 +39,6 @@ function downloadContent(videoId, directory) {
           });
       });
   }
-}
+};
 
 module.exports = { downloadContent };

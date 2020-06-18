@@ -6,7 +6,7 @@ const youtube = google.youtube({
   auth: config.apiKey,
 });
 
-async function getVideosByUsername(username) {
+const getVideosByUsername = async (username) => {
   const playlistId = await youtube.channels
     .list({ part: 'contentDetails', forUsername: username })
     .then(
@@ -15,9 +15,9 @@ async function getVideosByUsername(username) {
     );
 
   return await getVideosByPlaylistId(playlistId);
-}
+};
 
-async function getVideosByChannelId(channelId) {
+const getVideosByChannelId = async (channelId) => {
   const playlistId = await youtube.channels
     .list({ part: 'contentDetails', id: channelId })
     .then(
@@ -26,9 +26,9 @@ async function getVideosByChannelId(channelId) {
     );
 
   return await getVideosByPlaylistId(playlistId);
-}
+};
 
-async function getVideosByPlaylistId(playlistId) {
+const getVideosByPlaylistId = async (playlistId) => {
   const videos = await youtube.playlistItems
     .list({
       part: 'snippet',
@@ -44,7 +44,7 @@ async function getVideosByPlaylistId(playlistId) {
     );
 
   return videos;
-}
+};
 
 module.exports = {
   getVideosByUsername,

@@ -1,10 +1,11 @@
 const config = require('../config.json');
 const youtube = require('./youtube');
 const downloader = require('./downloader');
-const cleanup = require('./cleanup');
-const rss = require('./rss');
+const feedUpdater = require('./feedUpdater');
 
-async function updateFeeds() {
+const workingDirectory = './data';
+
+const runUpdate = async () => {
   // Get updated videos from YouTube
   const feeds = await Promise.all(
     config.feeds.map(async (feed) => {
@@ -22,34 +23,38 @@ async function updateFeeds() {
             feed.regex ? video.title.match(feed.regex) : true
           )
           .map((video) =>
-            feed.cleanTitle
-              ? { ...video, title: video.title.replace(feed.cleanTitle, '') }
+            feed.removeFromEpisodeTitles
+              ? {
+                  ...video,
+                  title: video.title
+                    .replace(feed.removeFromEpisodeTitles.trim(), '')
+                    .trim()
+                    .replace('[\\s]+', ' ')
+                    .replace('(^(-||)|(-||)$)', '')
+                    .trim(),
+                }
               : video
-          )
-          .slice(0, config.maxEpisodes),
+          ),
       };
     })
   );
 
-  // Update RSS feeds
-  feeds.map((feed) =>
-    rss.generateRssFeed(feed, `${config.workingDirectory}/${feed.id}`)
+  // Update feed data
+  feeds = feeds.map((feed) =>
+    feedUpdater.updateFeed(feed, `${workingDirectory}/${feed.id}`)
   );
-
-  // Cleanup old content
-  cleanup.removeOldContent(feeds);
 
   // Download new content
   feeds.map((feed) =>
     feed.videos.map((video) =>
       downloader.downloadContent(
         video.id,
-        `${config.workingDirectory}/${feed.id}/content`
+        `${workingDirectory}/${feed.id}/content`
       )
     )
   );
 
   console.log(`${new Date().toLocaleString()} - Update Complete`);
-}
+};
 
-module.exports = { updateFeeds };
+module.exports = { runUpdate };
