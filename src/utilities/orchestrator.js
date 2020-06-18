@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const config = require('../../config.json');
 const youtube = require('./youtube');
 const downloader = require('./downloader');
 const feedUpdater = require('./feedUpdater');

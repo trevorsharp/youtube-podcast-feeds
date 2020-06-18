@@ -18,7 +18,7 @@ Create video podcast rss feeds for youtube channels, users, or playlists
       "title" : "H3 Podcast",
       "channel" : "UCLtREJY21xRfCuEKvdki1Kw",
       "regex" : "H3 Podcast #[0-9]+",
-      "removeFromEpisodeTitles" : "H3 Podcast "
+      "removeFromEpisodeTitles" : "H3 Podcast"
     }
   ]
 }
@@ -52,8 +52,8 @@ services:
     container_name: youtube-podcast-feeds
     restart: always
     volumes:
-      - ./config.json:/usr/src/config.json
-      - ./data:/usr/src/data
+      - ./config.json:/app/config.json
+      - ./data:/app/data
   youtube-podcast-feeds-webserver:
     image: nginx:alpine
     restart: always
@@ -62,7 +62,7 @@ services:
       - 80:80
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./data:/usr/src/data
+      - ./data:/app/data
 ```
 
 ### nginx.conf
@@ -74,7 +74,7 @@ http {
     server_name example.com www.example.com;
 
     location / {
-      root /usr/src/data;
+      root /app/data;
 		  index rss.xml;
     }
   }

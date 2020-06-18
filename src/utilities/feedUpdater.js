@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const config = require('../../config.json');
 const cleanup = require('./cleanup');
 const rss = require('./rss');
 const fs = require('fs');
