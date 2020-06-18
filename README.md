@@ -75,7 +75,7 @@ http {
 
     location / {
       root /app/data;
-		  index rss.xml;
+      index rss.xml;
     }
   }
 }

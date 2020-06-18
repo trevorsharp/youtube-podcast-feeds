@@ -9,9 +9,11 @@ const updateFeed = (feed, directory) => {
       !feed.videos.some((v) => v.id === video.id) && feed.videos.push(video)
   );
 
-  feed.videos.splice(0, config.maxEpisodes);
+  feed.videos = feed.videos
+    .sort((a, b) => b.date - a.date)
+    .splice(0, config.maxEpisodes);
 
-  saveFeedDataToFile(feed);
+  saveFeedDataToFile(feed, directory);
 
   rss.generateRssFeed(feed, directory);
 
@@ -26,10 +28,10 @@ const getFeedDataFromFile = (directory) =>
   );
 
 const saveFeedDataToFile = (feed, directory) =>
-  fs.writeFileSync(getDataSaveFile(directory), feed.map(JSON.stringify));
+  fs.writeFileSync(getDataSaveFile(directory), JSON.stringify(feed));
 
 const getDataSaveFile = (directory) => {
-  const file = `${directory}/.feedData.json`;
+  const file = `${directory}/feedData.json`;
 
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory, { recursive: true });

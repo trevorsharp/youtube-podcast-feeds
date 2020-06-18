@@ -7,7 +7,7 @@ const workingDirectory = './data';
 
 const runUpdate = async () => {
   // Get updated videos from YouTube
-  const feeds = await Promise.all(
+  var feeds = await Promise.all(
     config.feeds.map(async (feed) => {
       return {
         ...feed,
