@@ -45,8 +45,8 @@ const getVideosForFeedAsync = async (feed) =>
             title: video.title
               .replace(feed.removeFromEpisodeTitles.trim(), '')
               .trim()
-              .replace('[\\s]+', ' ')
-              .replace('(^(-||)|(-||)$)', '')
+              .replace(/  +/g, ' ')
+              .replace(/(^(-|\|)|(-|\|)$)/g, '')
               .trim(),
           }
         : video
