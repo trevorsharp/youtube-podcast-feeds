@@ -1,7 +1,9 @@
 FROM alpine:3.12
 
-RUN apk add  --no-cache ffmpeg youtube-dl
+RUN apk add  --no-cache --upgrade bash ffmpeg youtube-dl
 
-WORKDIR /app/data
+WORKDIR /app
+COPY ./downloader.sh ./downloader.sh
+RUN chmod +x ./downloader.sh
 
-CMD touch .download.txt && youtube-dl --format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio --merge-output-format=mp4 --output="/content/%(id)s.%(ext)s" --batch-file=.download.txt
+CMD ./downloader.sh
