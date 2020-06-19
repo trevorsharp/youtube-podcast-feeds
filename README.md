@@ -56,6 +56,12 @@ services:
     volumes:
       - ./config.json:/app/config.json
       - ./data:/app/data
+  youtube-podcast-feeds-downloader:
+    image: trevorsharp/youtube-podcast-feeds-downloader
+    container_name: youtube-podcast-feeds-downloader
+    restart: always
+    volumes:
+      - ./data:/app/data
   youtube-podcast-feeds-webserver:
     image: nginx:alpine
     restart: always
