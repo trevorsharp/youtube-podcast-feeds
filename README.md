@@ -8,6 +8,7 @@ Create video podcast rss feeds for youtube channels, users, or playlists
 
 ```
 {
+  "timeZone" : "America/New_York",
   "hostname" : "https://example.com",
   "apiKey" : "YOUTUBE_API_KEY",
   "updateInterval" : 2,
@@ -24,6 +25,7 @@ Create video podcast rss feeds for youtube channels, users, or playlists
 }
 ```
 
+- **timeZone** - Name of time zone used for logging
 - **hostname** - Hostname that will serve the files in data folder
 - **apiKey** - YouTube API V3 Key
 - **updateInterval** - Interval for updating feeds (in hours)

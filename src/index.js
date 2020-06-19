@@ -1,10 +1,9 @@
 const config = require('./config.js');
 const feedUpdater = require('./feedUpdater');
+const logger = require('./utilities/logger');
 
 const scheduledTask = async () => {
-  feedUpdater
-    .run()
-    .then(console.log(`${new Date().toISOString()} - Update Complete`));
+  feedUpdater.run().then((_) => logger.log(`Update Complete`));
 };
 
 scheduledTask();

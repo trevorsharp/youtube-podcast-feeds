@@ -12,7 +12,11 @@ const getVideosByUsername = async (username) => {
     .then(
       (response) =>
         response.data.items[0].contentDetails.relatedPlaylists.uploads
-    );
+    )
+    .catch(() => {
+      console.log(`Could not find YouTube username: ${username}`);
+      process.exit();
+    });
 
   return await getVideosByPlaylistId(playlistId);
 };
@@ -23,7 +27,11 @@ const getVideosByChannelId = async (channelId) => {
     .then(
       (response) =>
         response.data.items[0].contentDetails.relatedPlaylists.uploads
-    );
+    )
+    .catch(() => {
+      console.log(`Could not find YouTube channel for id: ${channelId}`);
+      process.exit();
+    });
 
   return await getVideosByPlaylistId(playlistId);
 };
@@ -42,13 +50,29 @@ const getVideosByPlaylistId = async (playlistId) => {
         description: item.snippet.description,
         date: item.snippet.publishedAt,
       }))
-    );
+    )
+    .catch(() => {
+      console.log(`Could not find YouTube playlist for id: ${playlistId}`);
+      process.exit();
+    });
 
   return videos;
 };
+
+const getCoverArtUrlByUsername = async (username) =>
+  await youtube.channels
+    .list({ part: 'snippet', forUsername: username })
+    .then((response) => response.data.items[0].snippet.thumbnails.high);
+
+const getCoverArtUrlByChannelId = async (channelId) =>
+  await youtube.channels
+    .list({ part: 'snippet', id: channelId })
+    .then((response) => response.data.items[0].snippet.thumbnails.high);
 
 module.exports = {
   getVideosByUsername,
   getVideosByChannelId,
   getVideosByPlaylistId,
+  getCoverArtUrlByUsername,
+  getCoverArtUrlByChannelId,
 };

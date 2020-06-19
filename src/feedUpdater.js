@@ -1,5 +1,6 @@
 const config = require('./config.js');
 const fs = require('fs');
+const request = require('request');
 const youtube = require('./utilities/youtube');
 const downloader = require('./utilities/downloader');
 const rss = require('./utilities/rss');
@@ -9,7 +10,7 @@ const workingDirectory = './data';
 const run = async () => {
   const feeds = await Promise.all(
     config.feeds.map(async (feed) => {
-      const videos = await getVideosForFeed(feed);
+      const videos = await getVideosForFeedAsync(feed);
       return updateFeed({
         ...feed,
         videos,
@@ -29,7 +30,7 @@ const run = async () => {
   });
 };
 
-const getVideosForFeed = async (feed) =>
+const getVideosForFeedAsync = async (feed) =>
   (
     (feed.user && (await youtube.getVideosByUsername(feed.user))) ||
     (feed.channel && (await youtube.getVideosByChannelId(feed.channel))) ||
@@ -67,6 +68,8 @@ const updateFeed = (feed) => {
 
   removeOldContent(feed, `${directory}/content`);
 
+  grabCoverArtAsync(feed, directory);
+
   return feed;
 };
 
@@ -103,6 +106,21 @@ const removeOldContent = (feed, directory) => {
         }
       })
     );
+  }
+};
+
+const grabCoverArtAsync = async (feed, directory) => {
+  const file = `${directory}/cover.png`;
+  if (!fs.existsSync(file)) {
+    const coverArtUrl =
+      (feed.user && (await youtube.getCoverArtUrlByUsername(feed.user))) ||
+      (feed.channel &&
+        (await youtube.getCoverArtUrlByChannelId(feed.channel))) ||
+      undefined;
+
+    if (coverArtUrl) {
+      request(coverArtUrl).pipe(fs.createWriteStream(file));
+    }
   }
 };
 
