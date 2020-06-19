@@ -58,7 +58,7 @@ services:
       - ./data:/app/data
   youtube-podcast-feeds-downloader:
     image: trevorsharp/youtube-podcast-feeds-downloader
-    container_name: youtube-podcast-feeds-downloader
+    container_name: youtube-podcast-feeds-downloader:latest
     restart: always
     volumes:
       - ./data:/app/data
