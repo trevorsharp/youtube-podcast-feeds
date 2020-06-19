@@ -30,18 +30,18 @@ Create video podcast rss feeds for youtube channels, users, or playlists
 - **apiKey** - YouTube API V3 Key
 - **updateInterval** - Interval for updating feeds (in hours)
 - **maxEpisodes** - Maximum number of videos to keep per feed
-- **feed.id** - Unique identifier for each feed (podcast RSS feed will be served at hostname/FEED-ID/rss.xml)
-- **feed.title** - Name of RSS feed
+- **feed.id** - Unique identifier for each feed
+- **feed.title** - Title for the podcast
 
-### Use One Per Feed
+### Feed Sources: (use only one per feed)
 
 - **feed.channel** - YouTube channel id (from https://youtube.com/channel/CHANNEL_ID)
 - **feed.user** - YouTube username (from https://youtube.com/user/USERNAME)
 - **feed.playlist** - YouTube playlist id (from https://www.youtube.com/playlist?list=PLAYLIST_ID)
 
-### Optional
+### Optional Parameters:
 
-- **feed.regex** - Videos are filtered by title with matching regex
+- **feed.regex** - Videos from YouTube are filtered by titles that have a match for the regex
 - **feed.removeFromEpisodeTitles** - Matches of this string are removed from episode titles
 
 ### docker-compose.yml
