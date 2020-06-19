@@ -1,7 +1,9 @@
-FROM node
+FROM node:14.4.0-alpine
+
+RUN apk add  --no-cache yarn
 
 WORKDIR /app
 COPY . .
 
-RUN npm install
-CMD [ "npm", "start" ]
+RUN yarn
+CMD [ "yarn", "start" ]
