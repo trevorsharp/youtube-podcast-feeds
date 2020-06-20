@@ -1,6 +1,11 @@
 # youtube-podcast-feeds
 
-Create video podcast feeds for YouTube channels, users, or playlists
+Create video podcast feeds from YouTube videos
+
+## Features
+- Download YouTube videos from channels, users, or playlists
+- Generate RSS feeds that can be added to a podcast app
+- Simple web server for hosting RSS feeds and video files
 
 ## Setup Using Docker
 
@@ -114,21 +119,21 @@ Files will be stored in the data directory using the following structure:
 
 ```
 data
-|
-└── content
-|   └── videoId1.mp4
-|   └── videoId2.mp4
-|   └── videoId3.mp4
-|       ...
-|
-└── feedId1
-|    └── cover.png
-|    └── feedData.json
-|    └── rss.xml
-|
-└── feedId2
-     └── cover.png
-     └── feedData.json
-     └── rss.xml
-...
+ |
+ └── content
+ |    └── videoId1.mp4
+ |    └── videoId2.mp4
+ |    └── videoId3.mp4
+ |        ...
+ |
+ └── feedId1
+ |    └── cover.png
+ |    └── feedData.json
+ |    └── rss.xml
+ |
+ └── feedId2
+      └── cover.png
+      └── feedData.json
+      └── rss.xml
+ ...
 ```
