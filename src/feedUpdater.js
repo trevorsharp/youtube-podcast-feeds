@@ -1,18 +1,14 @@
-const config = require('./config.js');
 const fs = require('fs');
 const request = require('request');
 const youtube = require('./utilities/youtube');
 const downloader = require('./utilities/downloader');
 const cleanup = require('./utilities/cleanup');
 const rss = require('./utilities/rss');
-
-const workingDirectory = './data';
-const contentDirectory = `${workingDirectory}/content`;
-const getFeedDirectory = (feedId) => `${workingDirectory}/${feedId}`;
+const { getFeedDirectory, feedConfigs, maxEpisodes } = require('./config');
 
 const run = async () => {
   const feeds = await Promise.all(
-    config.feeds.map(async (feed) => {
+    feedConfigs.map(async (feed) => {
       const videos = await getVideosForFeedAsync(feed);
       return updateFeed({
         ...feed,
@@ -21,11 +17,9 @@ const run = async () => {
     })
   );
 
-  cleanup.removeOldContent(feeds, contentDirectory);
+  cleanup.removeOldContent(feeds);
 
-  downloader.downloadNewContent(feeds, workingDirectory, contentDirectory, () =>
-    rss.updateRssFeeds(feeds, workingDirectory)
-  );
+  downloader.downloadNewContent(feeds, () => rss.updateRssFeeds(feeds));
 };
 
 const getVideosForFeedAsync = async (feed) =>
@@ -51,42 +45,42 @@ const getVideosForFeedAsync = async (feed) =>
     );
 
 const updateFeed = (feed) => {
-  const feedDirectory = getFeedDirectory(feed.id);
-
-  getFeedDataFromFile(feedDirectory)?.videos.map(
+  getFeedDataFromFile(feed.id)?.videos.map(
     (video) =>
       !feed.videos.some((v) => v.id === video.id) && feed.videos.push(video)
   );
 
   feed.videos
     .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .splice(config.maxEpisodes || feed.videos.length);
+    .splice(maxEpisodes || feed.videos.length);
 
-  saveFeedDataToFile(feed, feedDirectory);
+  saveFeedDataToFile(feed);
 
-  grabCoverArtAsync(feed, feedDirectory);
+  grabCoverArtAsync(feed);
 
   return feed;
 };
 
-const getFeedDataFromFile = (feedDirectory) =>
-  JSON.parse(fs.readFileSync(getDataFilePath(feedDirectory)));
+const getFeedDataFromFile = (feedId) =>
+  fs.existsSync(getDataFilePath(feedId))
+    ? JSON.parse(fs.readFileSync(getDataFilePath(feedId)))
+    : undefined;
 
-const saveFeedDataToFile = (feed, feedDirectory) =>
-  fs.writeFileSync(getDataFilePath(feedDirectory), JSON.stringify(feed));
+const saveFeedDataToFile = (feed) =>
+  fs.writeFileSync(getDataFilePath(feed.id), JSON.stringify(feed));
 
-const getDataFilePath = (feedDirectory) => {
-  const file = `${feedDirectory}/feedData.json`;
+const getDataFilePath = (feedId) => {
+  const file = `${getFeedDirectory(feedId)}/feedData.json`;
 
-  if (!fs.existsSync(feedDirectory)) {
-    fs.mkdirSync(feedDirectory, { recursive: true });
+  if (!fs.existsSync(getFeedDirectory(feedId))) {
+    fs.mkdirSync(getFeedDirectory(feedId), { recursive: true });
   }
 
   return file;
 };
 
-const grabCoverArtAsync = async (feed, feedDirectory) => {
-  const file = `${feedDirectory}/cover.png`;
+const grabCoverArtAsync = async (feed) => {
+  const file = `${getFeedDirectory(feed.id)}/cover.png`;
   if (!fs.existsSync(file)) {
     const coverArtUrl =
       (feed.user && (await youtube.getCoverArtUrlByUsername(feed.user))) ||

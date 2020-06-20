@@ -17,7 +17,8 @@ To run this application using docker:
 3. Run `docker-compose up -d` in the folder where your `docker-compose.yml` lives
 4. Check the logs using `docker-compose logs -f` to see if there are any errors in your configuration
 5. (Optional) - Replace `cover.png` files in the data directory with custom cover artwork (YouTube channel or user profile pictures are pulled automatically on first run)
-6. Add podcast feeds to your podcast app of choice with the URL `http://hostname/feedId`
+6. Wait for the first update run to complete all downloads
+7. Add podcast feeds to your podcast app of choice with the URL `http://hostname/feedId`
 
 ### docker-compose.yml
 

@@ -1,0 +1,75 @@
+{
+  "$id": "youtube-podcast-feeds-config-schema",
+  "type": "object",
+  "properties": {
+    "hostname": {
+      "type": "string",
+      "pattern": "^https?:\\/\\/[^\\s$.?#].[^\\s\\/]*$"
+    },
+    "apiKey": {
+      "type": "string",
+      "pattern": "^([A-Za-z0-9]|\\-)+$",
+      "minLength": 30
+    },
+    "timeZone": {
+      "type": "string",
+      "pattern": "^[A-Za-z]+\\/([A-Za-z]|_)+$"
+    },
+    "updateInterval": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "maxResults": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "maxEpisodes": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "feeds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[^\\s$.?#\\/]+$",
+            "not": { "enum": ["content"] }
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "channel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "user": {
+            "type": "string",
+            "minLength": 1
+          },
+          "playlist": {
+            "type": "string",
+            "minLength": 1
+          },
+          "regex": {
+            "type": "string",
+            "minLength": 1
+          },
+          "removeFromEpisodeTitles": {
+            "type": "string"
+          }
+        },
+        "oneOf": [
+          { "required": ["id", "title", "channel"] },
+          { "required": ["id", "title", "user"] },
+          { "required": ["id", "title", "playlist"] }
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "required": ["hostname", "apiKey", "feeds"]
+}

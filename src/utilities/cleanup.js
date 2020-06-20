@@ -1,6 +1,7 @@
 const fs = require('fs');
+const { contentDirectory } = require('../config');
 
-const removeOldContent = (feeds, contentDirectory) => {
+const removeOldContent = (feeds) => {
   if (!fs.existsSync(contentDirectory)) {
     fs.mkdirSync(contentDirectory, { recursive: true });
   }

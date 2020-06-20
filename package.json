@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "ajv": "^6.12.2",
     "feed": "^4.2.0",
     "google-auth-library": "^6.0.1",
     "googleapis": "^52.1.0",

@@ -1,17 +1,15 @@
-const config = require('../config.js');
 const fs = require('fs');
 const { Feed } = require('feed');
+const { getFeedDirectory, hostname } = require('../config');
 
-const updateRssFeeds = (feeds, workingDirectory) => {
+const updateRssFeeds = (feeds) => {
   feeds.map((feed) => {
-    const feedDirectory = `${workingDirectory}/${feed.id}`;
-
     const rssFeed = new Feed({
       title: feed.title,
       description: feed.title,
       author: { name: feed.title },
-      link: `${config.hostname}/${feed.id}/rss.xml`,
-      image: `${config.hostname}/${feed.id}/cover.png`,
+      link: `${hostname}/${feed.id}/rss.xml`,
+      image: `${hostname}/${feed.id}/cover.png`,
     });
 
     feed.videos.map((video) =>
@@ -19,15 +17,15 @@ const updateRssFeeds = (feeds, workingDirectory) => {
         title: video.title,
         description: video.description,
         date: new Date(video.date),
-        image: `${config.hostname}/content/${video.id}.mp4`,
+        image: `${hostname}/content/${video.id}.mp4`,
       })
     );
 
-    if (!fs.existsSync(feedDirectory)) {
-      fs.mkdirSync(feedDirectory, { recursive: true });
+    if (!fs.existsSync(getFeedDirectory(feed.id))) {
+      fs.mkdirSync(getFeedDirectory(feed.id), { recursive: true });
     }
 
-    const file = `${feedDirectory}/rss.xml`;
+    const file = `${getFeedDirectory(feed.id)}/rss.xml`;
     const contents = rssFeed.rss2();
     fs.writeFileSync(file, contents);
   });

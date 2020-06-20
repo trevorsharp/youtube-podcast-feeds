@@ -1,9 +1,9 @@
-const config = require('../config.js');
 const { google } = require('googleapis');
+const { apiKey, maxResults } = require('../config');
 
 const youtube = google.youtube({
   version: 'v3',
-  auth: config.apiKey,
+  auth: apiKey,
 });
 
 const getVideosByUsername = async (username) => {
@@ -41,7 +41,7 @@ const getVideosByPlaylistId = async (playlistId) => {
     .list({
       part: 'snippet',
       playlistId: playlistId,
-      maxResults: config.maxResults || 5,
+      maxResults: maxResults || 5,
     })
     .then((response) =>
       response.data.items.map((item) => ({
