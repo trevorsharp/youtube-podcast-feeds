@@ -2,6 +2,7 @@ const config = require('./config.js');
 const fs = require('fs');
 const request = require('request');
 const youtube = require('./utilities/youtube');
+const downloader = require('./utilities/downloader');
 const rss = require('./utilities/rss');
 
 const workingDirectory = './data';
@@ -9,7 +10,6 @@ const contentDirectory = `${workingDirectory}/content`;
 const getFeedDirectory = (feedId) => `${workingDirectory}/${feedId}`;
 
 const run = async () => {
-  // Update All Feeds
   const feeds = await Promise.all(
     config.feeds.map(async (feed) => {
       const videos = await getVideosForFeedAsync(feed);
@@ -22,7 +22,9 @@ const run = async () => {
 
   removeOldContent(feeds);
 
-  updateDownloadList(feeds);
+  downloader.downloadNewContent(feeds, workingDirectory, contentDirectory, () =>
+    rss.updateRssFeeds(feeds, workingDirectory)
+  );
 };
 
 const getVideosForFeedAsync = async (feed) =>
@@ -61,8 +63,6 @@ const updateFeed = (feed) => {
     .splice(0, config.maxEpisodes);
 
   saveFeedDataToFile(feed, directory);
-
-  rss.updateRssFeed(feed, directory);
 
   grabCoverArtAsync(feed, directory);
 
@@ -115,36 +115,6 @@ const grabCoverArtAsync = async (feed, directory) => {
       request(coverArtUrl).pipe(fs.createWriteStream(file));
     }
   }
-};
-
-const updateDownloadList = (feeds) => {
-  const downloadsFile = `${workingDirectory}/.download.txt`;
-  const videoIdsToDownload = [];
-
-  if (!fs.existsSync(contentDirectory)) {
-    fs.mkdirSync(contentDirectory, { recursive: true });
-  }
-
-  const videoFiles = fs.readdirSync(contentDirectory);
-
-  feeds.map((feed) => {
-    feed.videos.map(
-      (video) =>
-        !videoFiles.includes(`${video.id}.mp4`) &&
-        videoIdsToDownload.push(video.id)
-    );
-  });
-
-  if (fs.existsSync(downloadsFile)) {
-    fs.unlinkSync(downloadsFile);
-  }
-
-  videoIdsToDownload.map((videoId) =>
-    fs.appendFileSync(
-      downloadsFile,
-      `http://www.youtube.com/watch?v=${videoId}\n`
-    )
-  );
 };
 
 module.exports = { run };

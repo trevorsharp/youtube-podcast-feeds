@@ -1,9 +1,0 @@
-FROM alpine:3.12
-
-RUN apk add  --no-cache --upgrade bash ffmpeg youtube-dl
-
-WORKDIR /app
-COPY ./downloader.sh ./downloader.sh
-RUN chmod +x ./downloader.sh
-
-CMD ./downloader.sh
