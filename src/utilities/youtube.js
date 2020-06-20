@@ -41,7 +41,7 @@ const getVideosByPlaylistId = async (playlistId) => {
     .list({
       part: 'snippet',
       playlistId: playlistId,
-      maxResults: 10,
+      maxResults: config.maxResults || 5,
     })
     .then((response) =>
       response.data.items.map((item) => ({

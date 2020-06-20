@@ -7,4 +7,4 @@ const scheduledTask = async () => {
 };
 
 scheduledTask();
-setInterval(scheduledTask, 3600000 * config.updateInterval);
+setInterval(scheduledTask, 3600000 * (config.updateInterval || 2));

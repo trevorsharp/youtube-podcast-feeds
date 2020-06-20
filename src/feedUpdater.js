@@ -3,6 +3,7 @@ const fs = require('fs');
 const request = require('request');
 const youtube = require('./utilities/youtube');
 const downloader = require('./utilities/downloader');
+const cleanup = require('./utilities/cleanup');
 const rss = require('./utilities/rss');
 
 const workingDirectory = './data';
@@ -20,7 +21,7 @@ const run = async () => {
     })
   );
 
-  removeOldContent(feeds);
+  cleanup.removeOldContent(feeds, contentDirectory);
 
   downloader.downloadNewContent(feeds, workingDirectory, contentDirectory, () =>
     rss.updateRssFeeds(feeds, workingDirectory)
@@ -50,60 +51,42 @@ const getVideosForFeedAsync = async (feed) =>
     );
 
 const updateFeed = (feed) => {
-  const directory = getFeedDirectory(feed.id);
+  const feedDirectory = getFeedDirectory(feed.id);
 
-  // Merge new and existing video data
-  getFeedDataFromFile(directory)?.videos.map(
+  getFeedDataFromFile(feedDirectory)?.videos.map(
     (video) =>
       !feed.videos.some((v) => v.id === video.id) && feed.videos.push(video)
   );
 
-  feed.videos = feed.videos
-    .sort((a, b) => b.date - a.date)
-    .splice(0, config.maxEpisodes);
+  feed.videos
+    .sort((a, b) => (a.date < b.date ? 1 : -1))
+    .splice(config.maxEpisodes || feed.videos.length);
 
-  saveFeedDataToFile(feed, directory);
+  saveFeedDataToFile(feed, feedDirectory);
 
-  grabCoverArtAsync(feed, directory);
+  grabCoverArtAsync(feed, feedDirectory);
 
   return feed;
 };
 
-const getFeedDataFromFile = (directory) =>
-  fs.readFile(getDataFilePath(directory), (err, data) =>
-    err ? null : JSON.parse(data)
-  );
+const getFeedDataFromFile = (feedDirectory) =>
+  JSON.parse(fs.readFileSync(getDataFilePath(feedDirectory)));
 
-const saveFeedDataToFile = (feed, directory) =>
-  fs.writeFileSync(getDataFilePath(directory), JSON.stringify(feed));
+const saveFeedDataToFile = (feed, feedDirectory) =>
+  fs.writeFileSync(getDataFilePath(feedDirectory), JSON.stringify(feed));
 
-const getDataFilePath = (directory) => {
-  const file = `${directory}/feedData.json`;
+const getDataFilePath = (feedDirectory) => {
+  const file = `${feedDirectory}/feedData.json`;
 
-  if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory, { recursive: true });
+  if (!fs.existsSync(feedDirectory)) {
+    fs.mkdirSync(feedDirectory, { recursive: true });
   }
 
   return file;
 };
 
-const removeOldContent = (feeds) => {
-  if (!fs.existsSync(contentDirectory)) {
-    fs.mkdirSync(contentDirectory, { recursive: true });
-  }
-
-  const videoFiles = fs.readdirSync(contentDirectory);
-
-  videoFiles.map(
-    (file) =>
-      !feeds.find((feed) =>
-        feed.videos.map((video) => video.id).includes(file.replace('.mp4', ''))
-      ) && fs.unlinkSync(`${contentDirectory}/${file}`)
-  );
-};
-
-const grabCoverArtAsync = async (feed, directory) => {
-  const file = `${directory}/cover.png`;
+const grabCoverArtAsync = async (feed, feedDirectory) => {
+  const file = `${feedDirectory}/cover.png`;
   if (!fs.existsSync(file)) {
     const coverArtUrl =
       (feed.user && (await youtube.getCoverArtUrlByUsername(feed.user))) ||
