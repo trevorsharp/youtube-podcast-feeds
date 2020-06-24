@@ -5,7 +5,7 @@ Create video podcast feeds from YouTube videos
 ## Features
 
 - Download YouTube videos from channels, users, or playlists
-- Generate RSS feeds that can be added to a podcast app
+- Generate RSS feeds that can be added to podcast apps with support for video podcasts (e.g. Apple Podcasts)
 - Simple web server for hosting RSS feeds and video files
 
 ## Setup Using Docker
@@ -80,7 +80,7 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **feed.id** - Unique identifier for each feed (letters and numbers only, no spaces)
 - **feed.title** - Title for the podcast (read by podcast clients)
 
-#### Feed Sources: (use only one per feed)
+#### Feed Sources:
 
 - **feed.channel** - YouTube channel id (from https://youtube.com/channel/CHANNEL_ID)
 - **feed.user** - YouTube username (from https://youtube.com/user/USERNAME)

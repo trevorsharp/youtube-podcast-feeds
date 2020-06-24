@@ -61,7 +61,7 @@
             "type": "string"
           }
         },
-        "oneOf": [
+        "anyOf": [
           { "required": ["id", "title", "channel"] },
           { "required": ["id", "title", "user"] },
           { "required": ["id", "title", "playlist"] }

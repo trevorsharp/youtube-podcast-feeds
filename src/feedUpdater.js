@@ -23,12 +23,14 @@ const run = async () => {
 };
 
 const getVideosForFeedAsync = async (feed) =>
-  (
-    (feed.user && (await youtube.getVideosByUsername(feed.user))) ||
-    (feed.channel && (await youtube.getVideosByChannelId(feed.channel))) ||
-    (feed.playlist && (await youtube.getVideosByPlaylistId(feed.playlist))) ||
-    []
-  )
+  []
+    .concat(feed.user ? await youtube.getVideosByUsername(feed.user) : [])
+    .concat(
+      feed.channel ? await youtube.getVideosByChannelId(feed.channel) : []
+    )
+    .concat(
+      feed.playlist ? await youtube.getVideosByPlaylistId(feed.playlist) : []
+    )
     .filter((video) => (feed.regex ? video.title.match(feed.regex) : true))
     .map((video) =>
       feed.removeFromEpisodeTitles
