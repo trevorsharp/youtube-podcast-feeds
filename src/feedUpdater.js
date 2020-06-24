@@ -5,6 +5,7 @@ const downloader = require('./utilities/downloader');
 const cleanup = require('./utilities/cleanup');
 const rss = require('./utilities/rss');
 const { getFeedDirectory, feedConfigs, maxEpisodes } = require('./config');
+const logger = require('./utilities/logger');
 
 const run = async () => {
   const feeds = await Promise.all(
@@ -19,7 +20,10 @@ const run = async () => {
 
   cleanup.removeOldContent(feeds);
 
-  downloader.downloadNewContent(feeds, () => rss.updateRssFeeds(feeds));
+  downloader.downloadNewContent(feeds, () => {
+    rss.updateRssFeeds(feeds);
+    logger.log(`Update Complete`);
+  });
 };
 
 const getVideosForFeedAsync = async (feed) =>
