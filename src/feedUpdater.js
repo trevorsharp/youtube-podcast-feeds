@@ -5,6 +5,7 @@ const downloader = require('./utilities/downloader');
 const cleanup = require('./utilities/cleanup');
 const rss = require('./utilities/rss');
 const { getFeedDirectory, feedConfigs, maxEpisodes } = require('./config');
+const logger = require('./utilities/logger');
 
 const run = async () => {
   const feeds = await Promise.all(
@@ -19,16 +20,21 @@ const run = async () => {
 
   cleanup.removeOldContent(feeds);
 
-  downloader.downloadNewContent(feeds, () => rss.updateRssFeeds(feeds));
+  downloader.downloadNewContent(feeds, () => {
+    rss.updateRssFeeds(feeds);
+    logger.log(`Update Complete`);
+  });
 };
 
 const getVideosForFeedAsync = async (feed) =>
-  (
-    (feed.user && (await youtube.getVideosByUsername(feed.user))) ||
-    (feed.channel && (await youtube.getVideosByChannelId(feed.channel))) ||
-    (feed.playlist && (await youtube.getVideosByPlaylistId(feed.playlist))) ||
-    []
-  )
+  []
+    .concat(feed.user ? await youtube.getVideosByUsername(feed.user) : [])
+    .concat(
+      feed.channel ? await youtube.getVideosByChannelId(feed.channel) : []
+    )
+    .concat(
+      feed.playlist ? await youtube.getVideosByPlaylistId(feed.playlist) : []
+    )
     .filter((video) => (feed.regex ? video.title.match(feed.regex) : true))
     .map((video) =>
       feed.removeFromEpisodeTitles

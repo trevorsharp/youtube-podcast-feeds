@@ -11,7 +11,13 @@ const configSchema = require('./config.schema.json');
 const config = require('../config.json');
 
 if (!ajv.validate(configSchema, config)) {
-  console.log(`config.json is not valid`);
+  console.log(
+    `The config.json file is not valid: \n\n ${JSON.stringify(
+      ajv.errors,
+      null,
+      4
+    )}`
+  );
   process.exit();
 }
 
