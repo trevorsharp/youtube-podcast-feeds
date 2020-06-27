@@ -13,7 +13,7 @@ Create video podcast feeds from YouTube videos
 Prerequisites:
 
 - Ensure docker is set up and running on your machine (https://docs.docker.com/get-docker)
-- Setup a hostname that can be used to access your machine from the internet (can use static IP address as well)
+- Set up a hostname that can be used to access your machine from the internet (can use a static IP address as well)
 - Get a YouTube API v3 key (https://developers.google.com/youtube/v3/getting-started)
 
 To run this application using docker:
@@ -50,6 +50,8 @@ services:
 ```
 
 Create a file named `docker-compose.yml` with the contents above and substitute in the file path to your config files and the file path to your data directory.
+
+**Note:** The docker image in the file above is for x86_64 architecture. For an arm64 version of the container, add `-arm64` to the end of the container's tag (`trevorsharp/youtube-podcast-feeds:vX.X.X-arm64`).
 
 ### config.json
 
