@@ -1,17 +1,15 @@
 {
   "name": "youtube-podcast-feeds",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "author": "Trevor Sharp <sharp.trevor@me.com>",
   "license": "MIT",
   "private": true,
   "dependencies": {
     "ajv": "^6.12.2",
+    "axios": "^0.19.2",
     "feed": "^4.2.0",
-    "google-auth-library": "^6.0.1",
-    "googleapis": "^52.1.0",
-    "request": "^2.88.2",
-    "ytdl-core": "^2.1.7"
+    "googleapis": "^52.1.0"
   },
   "devDependencies": {
     "prettier": "^2.0.5"

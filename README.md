@@ -32,7 +32,7 @@ To run this application using docker:
 version: '3'
 services:
   youtube-podcast-feeds:
-    image: trevorsharp/youtube-podcast-feeds:v1.0.1
+    image: trevorsharp/youtube-podcast-feeds:v1.0.2
     container_name: youtube-podcast-feeds
     restart: always
     volumes:
