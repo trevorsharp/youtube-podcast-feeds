@@ -1,5 +1,5 @@
 const fs = require('fs');
-const request = require('request');
+const axios = require('axios');
 const youtube = require('./utilities/youtube');
 const downloader = require('./utilities/downloader');
 const cleanup = require('./utilities/cleanup');
@@ -95,7 +95,11 @@ const grabCoverArtAsync = async (feed) => {
       undefined;
 
     if (coverArtUrl) {
-      request(coverArtUrl).pipe(fs.createWriteStream(file));
+      axios
+        .get(coverArtUrl, {
+          responseType: 'stream',
+        })
+        .then((response) => response.data.pipe(fs.createWriteStream(file)));
     }
   }
 };

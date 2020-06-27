@@ -62,12 +62,12 @@ const getVideosByPlaylistId = async (playlistId) => {
 const getCoverArtUrlByUsername = async (username) =>
   await youtube.channels
     .list({ part: 'snippet', forUsername: username })
-    .then((response) => response.data.items[0].snippet.thumbnails.high);
+    .then((response) => response.data.items[0].snippet.thumbnails.high?.url);
 
 const getCoverArtUrlByChannelId = async (channelId) =>
   await youtube.channels
     .list({ part: 'snippet', id: channelId })
-    .then((response) => response.data.items[0].snippet.thumbnails.high);
+    .then((response) => response.data.items[0].snippet.thumbnails.high?.url);
 
 module.exports = {
   getVideosByUsername,
