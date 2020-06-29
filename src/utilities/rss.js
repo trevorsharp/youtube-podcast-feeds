@@ -18,6 +18,7 @@ const updateRssFeeds = (feeds) => {
         description: video.description,
         date: new Date(video.date),
         image: `${hostname}/content/${video.id}.mp4`,
+        link: `http://www.youtube.com/watch?v=${video.id}`,
       })
     );
 
