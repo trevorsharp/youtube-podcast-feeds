@@ -32,7 +32,7 @@ To run this application using docker:
 version: '3'
 services:
   youtube-podcast-feeds:
-    image: trevorsharp/youtube-podcast-feeds:v1.0.3
+    image: trevorsharp/youtube-podcast-feeds:latest
     container_name: youtube-podcast-feeds
     restart: always
     volumes:
@@ -51,7 +51,7 @@ services:
 
 Create a file named `docker-compose.yml` with the contents above and substitute in the file path to your config files and the file path to your data directory.
 
-**Note:** The docker image in the file above is for x86_64 architecture. For an arm64 version of the container, add `-arm64` to the end of the container's tag (`trevorsharp/youtube-podcast-feeds:vX.X.X-arm64`).
+**Note:** The docker image in the file above is for x86_64 architecture. For an arm64 version of the container, add `-arm64` to the end of the container's tag (`trevorsharp/youtube-podcast-feeds:latest-arm64`).
 
 ### config.json
 
