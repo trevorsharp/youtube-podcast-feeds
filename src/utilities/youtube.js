@@ -1,5 +1,9 @@
 const { google } = require('googleapis');
+const moment = require('moment');
+const momentDurationFormatSetup = require('moment-duration-format');
 const { apiKey, maxResults } = require('../config');
+
+momentDurationFormatSetup(moment);
 
 const youtube = google.youtube({
   version: 'v3',
@@ -44,17 +48,31 @@ const getVideosByPlaylistId = async (playlistId) => {
       maxResults: maxResults || 5,
     })
     .then((response) =>
-      response.data.items.map((item) => ({
-        id: item.snippet.resourceId.videoId,
-        title: item.snippet.title,
-        description: item.snippet.description,
-        date: item.snippet.publishedAt,
-      }))
+      Promise.all(
+        response.data.items.map((item) => {
+          return youtube.videos
+            .list({
+              part: ['contentDetails'],
+              id: [item.snippet.resourceId.videoId],
+            })
+            .then((response) => ({
+              id: item.snippet.resourceId.videoId,
+              title: item.snippet.title,
+              description: item.snippet.description,
+              date: item.snippet.publishedAt,
+              duration: moment
+                .duration(response.data?.items[0]?.contentDetails?.duration)
+                .asSeconds(),
+            }));
+        })
+      )
     )
     .catch(() => {
       console.log(`Could not find YouTube playlist for id: ${playlistId}`);
       process.exit();
     });
+
+  console.log(videos);
 
   return videos;
 };
