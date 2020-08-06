@@ -2,6 +2,7 @@ const { google } = require('googleapis');
 const moment = require('moment');
 const momentDurationFormatSetup = require('moment-duration-format');
 const { apiKey, maxResults } = require('../config');
+const logger = require('./logger');
 
 momentDurationFormatSetup(moment);
 
@@ -18,7 +19,7 @@ const getVideosByUsername = async (username) => {
         response.data.items[0].contentDetails.relatedPlaylists.uploads
     )
     .catch(() => {
-      console.log(`Could not find YouTube username: ${username}`);
+      logger.log(`Could not find YouTube username: ${username}`);
       process.exit();
     });
 
@@ -33,7 +34,7 @@ const getVideosByChannelId = async (channelId) => {
         response.data.items[0].contentDetails.relatedPlaylists.uploads
     )
     .catch(() => {
-      console.log(`Could not find YouTube channel for id: ${channelId}`);
+      logger.log(`Could not find YouTube channel for id: ${channelId}`);
       process.exit();
     });
 
@@ -68,11 +69,9 @@ const getVideosByPlaylistId = async (playlistId) => {
       )
     )
     .catch(() => {
-      console.log(`Could not find YouTube playlist for id: ${playlistId}`);
+      logger.log(`Could not find YouTube playlist for id: ${playlistId}`);
       process.exit();
     });
-
-  console.log(videos);
 
   return videos;
 };

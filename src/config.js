@@ -1,13 +1,12 @@
-var Ajv = require('ajv');
-var ajv = new Ajv();
+const Ajv = require('ajv');
+const ajv = new Ajv();
+const configSchema = require('./config.schema.json');
 try {
   require('../config.json');
 } catch (e) {
-  console.log(`config.json is not found`);
+  console.log('config.json is not found');
   process.exit();
 }
-
-const configSchema = require('./config.schema.json');
 const config = require('../config.json');
 
 if (!ajv.validate(configSchema, config)) {
