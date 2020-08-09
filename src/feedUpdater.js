@@ -40,12 +40,7 @@ const getVideosForFeedAsync = async (feed) =>
       feed.removeFromEpisodeTitles
         ? {
             ...video,
-            title: video.title
-              .replace(feed.removeFromEpisodeTitles.trim(), '')
-              .trim()
-              .replace(/  +/g, ' ')
-              .replace(/(^(-|\|)|(-|\|)$)/g, '')
-              .trim(),
+            title: cleanTitle(video.title, feed.removeFromEpisodeTitles),
           }
         : video
     );
@@ -65,6 +60,25 @@ const updateFeed = (feed) => {
   grabCoverArtAsync(feed);
 
   return feed;
+};
+
+const cleanTitle = (title, removeFromEpisodeTitles) => {
+  const stringsToRemove = Array.isArray(removeFromEpisodeTitles)
+    ? removeFromEpisodeTitles
+    : [removeFromEpisodeTitles];
+
+  var cleanTitle = title;
+
+  stringsToRemove.forEach((stringToRemove) => {
+    cleanTitle = cleanTitle
+      .replace(stringToRemove.trim(), '')
+      .trim()
+      .replace(/  +/g, ' ')
+      .replace(/(^(-|\|)|(-|\|)$)/g, '')
+      .trim();
+  });
+
+  return cleanTitle;
 };
 
 const getFeedDataFromFile = (feedId) =>

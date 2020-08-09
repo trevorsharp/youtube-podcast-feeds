@@ -96,7 +96,7 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
 - **feed.regex** - Only videos that have a match for this regex will be added to the feed
-- **feed.removeFromEpisodeTitles** - Matches of this string are removed from episode titles (e.g. can be used to remove the name of the podcast from each episode title)
+- **feed.removeFromEpisodeTitles** - Matches of this string are removed from episode titles (e.g. can be used to remove the name of the podcast from each episode title) / Optionally can be passed an array of strings that will all be removed from the episode titles
 
 ### nginx.conf
 
