@@ -38,6 +38,7 @@ services:
     volumes:
       - REPLACE_WITH_CONFIG_DIRECTORY_PATH/config.json:/app/config.json
       - REPLACE_WITH_DATA_DIRECTORY_PATH:/app/data
+      - REPLACE_WITH_COOKIE_DIRECTORY_PATH/cookie.txt:/app/cookie.txt
   youtube-podcast-feeds-webserver:
     image: nginx:alpine
     restart: always
