@@ -19,7 +19,7 @@ Prerequisites:
 To run this application using docker:
 
 1. Create a directory to store data files (can be on an external drive or NAS)
-2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, `nginx.conf`, and optionally `cookie.txt`)
+2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, `nginx.conf`, and optionally `cookies.txt`)
 3. Run `docker-compose up -d` in the folder where your `docker-compose.yml` lives
 4. Check the logs using `docker-compose logs -f` to see if there are any errors in your configuration
 5. (Optional) - Replace `cover.png` files in the data directory with custom cover artwork (YouTube channel or user profile pictures are pulled automatically on first run)
@@ -39,7 +39,7 @@ services:
       - REPLACE_WITH_CONFIG_DIRECTORY_PATH/config.json:/app/config.json
       - REPLACE_WITH_DATA_DIRECTORY_PATH:/app/data
       # Remove the following line if you are not using a cookies.txt file
-      - REPLACE_WITH_COOKIE_DIRECTORY_PATH/cookies.txt:/app/cookies.txt
+      - REPLACE_WITH_COOKIES_DIRECTORY_PATH/cookies.txt:/app/cookies.txt
   youtube-podcast-feeds-webserver:
     image: nginx:alpine
     restart: always
