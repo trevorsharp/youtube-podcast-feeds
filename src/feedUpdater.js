@@ -47,12 +47,14 @@ const updateFeed = (feed) => {
 
   feed.videos
     .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .splice(maxEpisodes || feed.videos.length)
-    .forEach((video) =>
-      feed.cleanTitles
-        ? (video.title = cleanTitle(video.title, feed.cleanTitles))
-        : null
-    );
+    .splice(maxEpisodes || feed.videos.length);
+
+  if (feed.cleanTitles) {
+    feed.videos = feed.videos.map((video) => ({
+      ...video,
+      title: cleanTitle(video.title, feed.cleanTitles),
+    }));
+  }
 
   saveFeedDataToFile(feed);
 
