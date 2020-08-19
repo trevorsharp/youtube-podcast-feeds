@@ -5,7 +5,7 @@ const { workingDirectory, contentDirectory } = require('../config');
 
 const downloadNewContent = (feeds, onComplete) => {
   const downloadsFile = `${workingDirectory}/.download.txt`;
-  const cookieFile = `/app/cookie.txt`;
+  const cookiesFile = `/app/cookies.txt`;
   const videoIdsToDownload = [];
 
   if (!fs.existsSync(contentDirectory)) {
@@ -38,12 +38,14 @@ const downloadNewContent = (feeds, onComplete) => {
     )
   );
 
+  const cookiesFileExists = fs.existsSync(cookiesFile);
+
   const downloadProcess = spawn('youtube-dl', [
-    `--cookies=${cookieFile}`,
     '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
     '--merge-output-format=mp4',
     `--output=${contentDirectory}/%(id)s.%(ext)s`,
     `--batch-file=${downloadsFile}`,
+    cookiesFileExists ? `--cookies=${cookiesFile}` : '',
   ]);
 
   downloadProcess.stdout.on('data', (data) => logger.log(data));

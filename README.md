@@ -19,7 +19,7 @@ Prerequisites:
 To run this application using docker:
 
 1. Create a directory to store data files (can be on an external drive or NAS)
-2. Create the three configuration files as described below
+2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, `nginx.conf`, and optionally `cookie.txt`)
 3. Run `docker-compose up -d` in the folder where your `docker-compose.yml` lives
 4. Check the logs using `docker-compose logs -f` to see if there are any errors in your configuration
 5. (Optional) - Replace `cover.png` files in the data directory with custom cover artwork (YouTube channel or user profile pictures are pulled automatically on first run)
@@ -38,7 +38,8 @@ services:
     volumes:
       - REPLACE_WITH_CONFIG_DIRECTORY_PATH/config.json:/app/config.json
       - REPLACE_WITH_DATA_DIRECTORY_PATH:/app/data
-      - REPLACE_WITH_COOKIE_DIRECTORY_PATH/cookie.txt:/app/cookie.txt
+      # Remove the following line if you are not using a cookies.txt file
+      - REPLACE_WITH_COOKIE_DIRECTORY_PATH/cookies.txt:/app/cookies.txt
   youtube-podcast-feeds-webserver:
     image: nginx:alpine
     restart: always
@@ -96,7 +97,10 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
 - **feed.filter** - Only videos that have a match for this regex will be added to the feed - _Default: none_
-- **feed.cleanTitles** - An list of 2-item arrays where the first element is a regex to match part of an episode title and the second is a regex replacement for any matches found (Example: [["H3 Podcast", ""], ["Episode", "Ep"]] will remove all matches of "H3 Podcast" from the title and replace all matches of "Episode" with "Ep" in the title) - _Default: empty_
+- **feed.cleanTitles** - A list of 2-item arrays where the first element is a regex to match part of an episode title and the second is a regex replacement for any matches found - _Default: empty_  
+  For Example: `[["H3 Podcast", ""], ["Episode", "Ep"]]` will remove all instances of "H3 Podcast" from the title and replace any instances of "Episode" with "Ep" in the title
+
+_For regex, be sure to double escape any backslashes_ (i.e. `"\\s"` for a whitespace character)
 
 ### nginx.conf
 
@@ -116,6 +120,17 @@ http {
 ```
 
 Create a file named `nginx.conf` with the contents above. If you are hosting other web services on the machine, you will likely need to customize the nginx config to work alongside those other services (or use a different port by changing the port configuration in your `docker-compose.yml`).
+
+### cookies.txt (Optional)
+
+If you want to download YouTube content that requires user authentication to download, you will need to add a cookies.txt file to your configuration. One reason for needing this is to download member-only videos. Note that the source of these videos (channel, user, or playlist) still must be either public or unlisted. For member-only videos, I recommend creating an unlisted playlist and manually adding the videos that you want to have available in the podcast feed.
+
+To generate this file:
+
+1. Download the cookies.txt Chrome Extension found [here](https://chrome.google.com/webstore/detail/cookiestxt/njabckikapfpffapmjgojcnbfjonfjfg)
+2. Log in to YouTube
+3. Open the cookies.txt extension and copy the entire contents
+4. Paste the contents into a file named `cookies.txt`
 
 ## Data Directory Structure
 

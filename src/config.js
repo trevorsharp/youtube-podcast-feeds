@@ -4,7 +4,7 @@ const configSchema = require('./config.schema.json');
 try {
   require('../config.json');
 } catch (e) {
-  console.log('config.json is not found');
+  console.log('config.json is not found or is not valid JSON');
   process.exit();
 }
 const config = require('../config.json');
