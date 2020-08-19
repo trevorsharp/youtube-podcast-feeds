@@ -20,7 +20,9 @@ const updateRssFeeds = (feeds) => {
 
     feed.videos.map((video) =>
       rssFeed.addItem({
-        title: video.title,
+        title: feed.cleanTitles
+          ? cleanTitle(video.title, feed.cleanTitles)
+          : video.title,
         description: video.description,
         date: new Date(video.date),
         enclosure: { url: `${hostname}/content/${video.id}.mp4` },
@@ -37,6 +39,22 @@ const updateRssFeeds = (feeds) => {
     const contents = rssFeed.buildXml();
     fs.writeFileSync(file, contents);
   });
+};
+
+const cleanTitle = (title, cleanTitlesConfig) => {
+  var cleanTitle = title;
+
+  cleanTitlesConfig.forEach((item) => {
+    cleanTitle = cleanTitle.replace(new RegExp(item[0], 'gi'), item[1]);
+  });
+
+  cleanTitle = cleanTitle
+    .replace(/(^[\s|\-]+|[\s|\-]+$)/g, '')
+    .replace(/([\s]+[\-]+[\s\-\|]+)/g, ' - ')
+    .replace(/([\s]+[\|]+[\s\-\|]+)/g, ' | ')
+    .replace(/\s+/g, ' ');
+
+  return cleanTitle;
 };
 
 module.exports = { updateRssFeeds };

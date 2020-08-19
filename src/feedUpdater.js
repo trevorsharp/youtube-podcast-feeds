@@ -49,33 +49,11 @@ const updateFeed = (feed) => {
     .sort((a, b) => (a.date < b.date ? 1 : -1))
     .splice(maxEpisodes || feed.videos.length);
 
-  if (feed.cleanTitles) {
-    feed.videos = feed.videos.map((video) => ({
-      ...video,
-      title: cleanTitle(video.title, feed.cleanTitles),
-    }));
-  }
-
   saveFeedDataToFile(feed);
 
   grabCoverArtAsync(feed);
 
   return feed;
-};
-
-const cleanTitle = (title, cleanTitlesConfig) => {
-  var cleanTitle = title;
-
-  cleanTitlesConfig.forEach((item) => {
-    cleanTitle = cleanTitle
-      .replace(new RegExp(item[0], 'gi'), item[1])
-      .replace(/(^[\s|\-]+|[\s|\-]+$)/g, '')
-      .replace(/([\s]+[\-]+[\s\-\|]+)/g, ' - ')
-      .replace(/([\s]+[\|]+[\s\-\|]+)/g, ' | ')
-      .replace(/\s+/g, ' ');
-  });
-
-  return cleanTitle;
 };
 
 const getFeedDataFromFile = (feedId) =>
