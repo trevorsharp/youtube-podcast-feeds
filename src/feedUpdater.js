@@ -71,11 +71,11 @@ const cleanTitle = (title, removeFromEpisodeTitles) => {
 
   stringsToRemove.forEach((stringToRemove) => {
     cleanTitle = cleanTitle
-      .replace(stringToRemove.trim(), '')
-      .trim()
-      .replace(/  +/g, ' ')
-      .replace(/(^(-|\|)|(-|\|)$)/g, '')
-      .trim();
+      .replace(new RegExp('(' + stringToRemove.trim() + ')', 'gi'), '')
+      .replace(/\|/g, '-')
+      .replace(/(^[\s|\-]+|[\s|\-]+$)/g, '')
+      .replace(/([\s]*[\-]+[\s\-]*)/g, ' - ')
+      .replace(/\s+/g, ' ');
   });
 
   return cleanTitle;
