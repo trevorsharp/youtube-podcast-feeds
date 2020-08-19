@@ -74,7 +74,7 @@ const cleanTitle = (title, removeFromEpisodeTitles) => {
       .replace(new RegExp('(' + stringToRemove.trim() + ')', 'gi'), '')
       .replace(/\|/g, '-')
       .replace(/(^[\s|\-]+|[\s|\-]+$)/g, '')
-      .replace(/([\s]*[\-]+[\s\-]*)/g, ' - ')
+      .replace(/([\s]+[\-]+[\s\-]+)/g, ' - ')
       .replace(/\s+/g, ' ');
   });
 
