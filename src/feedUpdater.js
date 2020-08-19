@@ -35,15 +35,7 @@ const getVideosForFeedAsync = async (feed) =>
     .concat(
       feed.playlist ? await youtube.getVideosByPlaylistId(feed.playlist) : []
     )
-    .filter((video) => (feed.filter ? video.title.match(feed.filter) : true))
-    .map((video) =>
-      feed.cleanTitles
-        ? {
-            ...video,
-            title: cleanTitle(video.title, feed.cleanTitles),
-          }
-        : video
-    );
+    .filter((video) => (feed.filter ? video.title.match(feed.filter) : true));
 
 const updateFeed = (feed) => {
   getFeedDataFromFile(feed.id)?.videos.map(
@@ -53,7 +45,12 @@ const updateFeed = (feed) => {
 
   feed.videos
     .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .splice(maxEpisodes || feed.videos.length);
+    .splice(maxEpisodes || feed.videos.length)
+    .forEach((video) =>
+      feed.cleanTitles
+        ? (video.title = cleanTitle(video.title, feed.cleanTitles))
+        : null
+    );
 
   saveFeedDataToFile(feed);
 
