@@ -98,9 +98,9 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
 - **feed.filter** - Only videos that have a match for this regex will be added to the feed - _Default: none_
 - **feed.cleanTitles** - A list of 2-item arrays where the first element is a regex to match part of an episode title and the second is a regex replacement for any matches found - _Default: empty_  
-  For Example: `[["H3 Podcast", ""], ["Episode", "Ep"]]` will remove all instances of "H3 Podcast" from the title and replace any instances of "Episode" with "Ep" in the title
+  For example, `[["H3 Podcast", ""], ["Episode", "Ep"]]` will remove all instances of "H3 Podcast" from the title and replace any instances of "Episode" with "Ep" in the title
 
-_For regex, be sure to double escape any backslashes_ (i.e. `"\\s"` for a whitespace character)
+**Note:** Regex are evaluated case insensitive, and be sure to double escape any backslashes (e.g. `"\\s"` for a whitespace character)
 
 ### nginx.conf
 
