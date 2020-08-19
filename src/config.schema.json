@@ -53,22 +53,22 @@
             "type": "string",
             "minLength": 1
           },
-          "regex": {
+          "filter": {
             "type": "string",
             "minLength": 1
           },
-          "removeFromEpisodeTitles": {
-            "anyOf": [
-              {
-                "type": "string"
+          "cleanTitles": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 0
               },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            ]
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "minItems": 0
           }
         },
         "anyOf": [

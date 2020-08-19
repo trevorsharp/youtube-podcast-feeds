@@ -35,12 +35,12 @@ const getVideosForFeedAsync = async (feed) =>
     .concat(
       feed.playlist ? await youtube.getVideosByPlaylistId(feed.playlist) : []
     )
-    .filter((video) => (feed.regex ? video.title.match(feed.regex) : true))
+    .filter((video) => (feed.filter ? video.title.match(feed.filter) : true))
     .map((video) =>
-      feed.removeFromEpisodeTitles
+      feed.cleanTitles
         ? {
             ...video,
-            title: cleanTitle(video.title, feed.removeFromEpisodeTitles),
+            title: cleanTitle(video.title, feed.cleanTitles),
           }
         : video
     );
@@ -62,19 +62,15 @@ const updateFeed = (feed) => {
   return feed;
 };
 
-const cleanTitle = (title, removeFromEpisodeTitles) => {
-  const stringsToRemove = Array.isArray(removeFromEpisodeTitles)
-    ? removeFromEpisodeTitles
-    : [removeFromEpisodeTitles];
-
+const cleanTitle = (title, cleanTitlesConfig) => {
   var cleanTitle = title;
 
-  stringsToRemove.forEach((stringToRemove) => {
+  cleanTitlesConfig.forEach((item) => {
     cleanTitle = cleanTitle
-      .replace(new RegExp('(Q"' + stringToRemove.trim() + '"E)', 'gi'), '')
-      .replace(/\|/g, '-')
+      .replace(new RegExp('(' + item[0].trim() + ')', 'gi'), item[1])
       .replace(/(^[\s|\-]+|[\s|\-]+$)/g, '')
-      .replace(/([\s]+[\-]+[\s\-]+)/g, ' - ')
+      .replace(/([\s]+[\-]+[\s\-\|]+)/g, ' - ')
+      .replace(/([\s]+[\|]+[\s\-\|]+)/g, ' | ')
       .replace(/\s+/g, ' ');
   });
 

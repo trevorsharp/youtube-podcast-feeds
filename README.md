@@ -69,8 +69,8 @@ Create a file named `docker-compose.yml` with the contents above and substitute 
       "id" : "h3podcast",
       "title" : "H3 Podcast",
       "channel" : "UCLtREJY21xRfCuEKvdki1Kw",
-      "regex" : "H3 Podcast #[0-9]+",
-      "removeFromEpisodeTitles" : "H3 Podcast"
+      "filter" : "H3 Podcast #[0-9]+",
+      "cleanTitles" : [["H3 Podcast", ""]]
     }
   ]
 }
@@ -95,8 +95,8 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **updateInterval** - Interval for updating feeds (in hours) - _Default: 2_
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
-- **feed.regex** - Only videos that have a match for this regex will be added to the feed
-- **feed.removeFromEpisodeTitles** - Matches of this string are removed from episode titles (e.g. can be used to remove the name of the podcast from each episode title) / Optionally can be passed an array of strings that will all be removed from the episode titles
+- **feed.filter** - Only videos that have a match for this regex will be added to the feed - _Default: none_
+- **feed.cleanTitles** - An list of 2-item arrays where the first element is a regex to match part of an episode title and the second is a regex replacement for any matches found (Example: [["H3 Podcast", ""], ["Episode", "Ep"]] will remove all matches of "H3 Podcast" from the title and replace all matches of "Episode" with "Ep" in the title) - _Default: empty_
 
 ### nginx.conf
 
