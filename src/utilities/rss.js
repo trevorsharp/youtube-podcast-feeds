@@ -18,23 +18,29 @@ const updateRssFeeds = (feeds) => {
       imageUrl: `${hostname}/${feed.id}/cover.png`,
     });
 
-    feed.videos.map((video) =>
+    feed.videos.map((video) => {
+      const title = feed.cleanTitles
+        ? cleanTitle(video.title, feed.cleanTitles)
+        : video.title;
+
+      const episodeNumber =
+        feed.episodeNumbers &&
+        new RegExp(feed.episodeNumbers, 'gi').test(video.title) &&
+        !isNaN(RegExp.$1)
+          ? { itunesEpisode: Number(RegExp.$1) }
+          : {};
+
       rssFeed.addItem({
-        title: feed.cleanTitles
-          ? cleanTitle(video.title, feed.cleanTitles)
-          : video.title,
+        title: title,
+        itunesTitle: title,
         description: video.description,
         date: new Date(video.date),
         enclosure: { url: `${hostname}/content/${video.id}.mp4` },
         url: `https://www.youtube.com/watch?v=${video.id}`,
         itunesDuration: video.duration,
-        ...(feed.episodeNumbers &&
-        new RegExp(feed.episodeNumbers, 'gi').test(video.title) &&
-        !isNaN(RegExp.$1)
-          ? { itunesEpisode: Number(RegExp.$1) }
-          : {}),
-      })
-    );
+        ...episodeNumber,
+      });
+    });
 
     if (!fs.existsSync(getFeedDirectory(feed.id))) {
       fs.mkdirSync(getFeedDirectory(feed.id), { recursive: true });
