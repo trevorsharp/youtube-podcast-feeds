@@ -71,6 +71,7 @@ Create a file named `docker-compose.yml` with the contents above and substitute 
       "title" : "H3 Podcast",
       "channel" : "UCLtREJY21xRfCuEKvdki1Kw",
       "filter" : "H3 Podcast #[0-9]+",
+      "episodeNumbers" : "#([0-9]+)",
       "cleanTitles" : [["H3 Podcast", ""]]
     }
   ]
@@ -96,11 +97,23 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **updateInterval** - Interval for updating feeds (in hours) - _Default: 2_
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
-- **feed.filter** - Only videos that have a match for this regex will be added to the feed - _Default: none_
-- **feed.cleanTitles** - A list of 2-item arrays where the first element is a regex to match part of an episode title and the second is a regex replacement for any matches found - _Default: empty_  
-  For example, `[["H3 Podcast", ""], ["Episode", "Ep"]]` will remove all instances of "H3 Podcast" from the title and replace any instances of "Episode" with "Ep" in the title
+- **feed.filter** - String containing regex used to filter videos. Only videos with titles that have a match for this regex will be added to the feed - _Default: none_
+- **feed.episodeNumbers** - String containing regex used to extract episode number from video title - _Default: no episode numbers_
+- **feed.cleanTitles** - Array of 2-item sub-arrays where the first element of each sub-array is a regex to match part of an episode title and the second element is a string replacement for any matches found - _Default: empty_
 
-**Note:** Regex are evaluated case insensitive, and be sure to double escape any backslashes (e.g. use `"\\s"` for a whitespace character)
+**Note:** Regex are evaluated case insensitive. Be sure to double escape any backslashes (e.g. use `"\\s"` for a whitespace character instead of just `"\s"`)
+
+#### Episode Numbers:
+
+In these regex, you must place the leftmost set of parentheses around the actual episode number. For example, `"#(\\d+)"` or `"Episode (\\d+)."` will work, but `"(#\\d+)"` or `"\\d+"` will not work.
+
+_Example:_ `"Ep (\\d+)"` would be used to extract the episode number (`123`) from a video title that looks like this: `This is my podcast title | Ep 123`.
+
+#### Clean Titles:
+
+The string replacement (second element of the sub-array) can use the RegExp.$1-$9 properties (see [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/n) for more info on how these are used). Common separators (`-` and `|`) are cleaned up automatically.
+
+_Example:_ `[["Podcast Name", ""], ["Ep (\\d+)", "#$1"]]` will transform `Podcast Episode Title | Podcast Name | Ep 123` into `Podcast Episode Title | #123`.
 
 ### nginx.conf
 

@@ -28,6 +28,11 @@ const updateRssFeeds = (feeds) => {
         enclosure: { url: `${hostname}/content/${video.id}.mp4` },
         url: `https://www.youtube.com/watch?v=${video.id}`,
         itunesDuration: video.duration,
+        ...(feed.episodeNumbers &&
+        new RegExp(feed.episodeNumbers, 'gi').test(video.title) &&
+        !isNaN(RegExp.$1)
+          ? { itunesEpisode: Number(RegExp.$1) }
+          : {}),
       })
     );
 
