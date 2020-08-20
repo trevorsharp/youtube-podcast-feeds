@@ -89,7 +89,7 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **feed.user** - YouTube username (from https://youtube.com/user/USERNAME)
 - **feed.playlist** - YouTube playlist id (from https://www.youtube.com/playlist?list=PLAYLIST_ID)
 
-### Optional Parameters:
+#### Optional Parameters:
 
 - **timeZone** - Name of time zone used for logging - _Default: America/New_York_
 - **updateInterval** - Interval for updating feeds (in hours) - _Default: 2_
