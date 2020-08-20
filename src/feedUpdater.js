@@ -35,19 +35,8 @@ const getVideosForFeedAsync = async (feed) =>
     .concat(
       feed.playlist ? await youtube.getVideosByPlaylistId(feed.playlist) : []
     )
-    .filter((video) => (feed.regex ? video.title.match(feed.regex) : true))
-    .map((video) =>
-      feed.removeFromEpisodeTitles
-        ? {
-            ...video,
-            title: video.title
-              .replace(feed.removeFromEpisodeTitles.trim(), '')
-              .trim()
-              .replace(/  +/g, ' ')
-              .replace(/(^(-|\|)|(-|\|)$)/g, '')
-              .trim(),
-          }
-        : video
+    .filter((video) =>
+      feed.filter ? video.title.match(new RegExp(feed.filter, 'gi')) : true
     );
 
 const updateFeed = (feed) => {

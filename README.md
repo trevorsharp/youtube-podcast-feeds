@@ -19,7 +19,7 @@ Prerequisites:
 To run this application using docker:
 
 1. Create a directory to store data files (can be on an external drive or NAS)
-2. Create the three configuration files as described below
+2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, `nginx.conf`, and optionally `cookies.txt`)
 3. Run `docker-compose up -d` in the folder where your `docker-compose.yml` lives
 4. Check the logs using `docker-compose logs -f` to see if there are any errors in your configuration
 5. (Optional) - Replace `cover.png` files in the data directory with custom cover artwork (YouTube channel or user profile pictures are pulled automatically on first run)
@@ -38,6 +38,8 @@ services:
     volumes:
       - REPLACE_WITH_CONFIG_DIRECTORY_PATH/config.json:/app/config.json
       - REPLACE_WITH_DATA_DIRECTORY_PATH:/app/data
+      # Remove the following line if you are not using a cookies.txt file
+      - REPLACE_WITH_COOKIES_DIRECTORY_PATH/cookies.txt:/app/cookies.txt
   youtube-podcast-feeds-webserver:
     image: nginx:alpine
     restart: always
@@ -68,8 +70,7 @@ Create a file named `docker-compose.yml` with the contents above and substitute 
       "id" : "h3podcast",
       "title" : "H3 Podcast",
       "channel" : "UCLtREJY21xRfCuEKvdki1Kw",
-      "regex" : "H3 Podcast #[0-9]+",
-      "removeFromEpisodeTitles" : "H3 Podcast"
+      "filter" : "H3 Podcast #[0-9]+"
     }
   ]
 }
@@ -88,14 +89,17 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **feed.user** - YouTube username (from https://youtube.com/user/USERNAME)
 - **feed.playlist** - YouTube playlist id (from https://www.youtube.com/playlist?list=PLAYLIST_ID)
 
-### Optional Parameters:
+#### Optional Parameters:
 
 - **timeZone** - Name of time zone used for logging - _Default: America/New_York_
 - **updateInterval** - Interval for updating feeds (in hours) - _Default: 2_
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
-- **feed.regex** - Only videos that have a match for this regex will be added to the feed
-- **feed.removeFromEpisodeTitles** - Matches of this string are removed from episode titles (e.g. can be used to remove the name of the podcast from each episode title)
+- **feed.filter** - String containing regex used to filter videos. Only videos with titles that have a match for this regex will be added to the feed - _Default: none_
+
+See [Advanced Parameters](#advanced-parameters) for more options
+
+**Note:** Regex are evaluated case insensitive. Be sure to double escape any backslashes (e.g. use `"\\s"` for a whitespace character instead of just `"\s"`)
 
 ### nginx.conf
 
@@ -115,6 +119,17 @@ http {
 ```
 
 Create a file named `nginx.conf` with the contents above. If you are hosting other web services on the machine, you will likely need to customize the nginx config to work alongside those other services (or use a different port by changing the port configuration in your `docker-compose.yml`).
+
+### cookies.txt (Optional)
+
+If you want to download YouTube content that requires user authentication to download, you will need to add a cookies.txt file to your configuration. One reason for needing this is to download member-only videos. Note that the source of these videos (channel, user, or playlist) still must be either public or unlisted. For member-only videos, I recommend creating an unlisted playlist and manually adding the videos that you want to have available in the podcast feed.
+
+To generate this file:
+
+1. Download the cookies.txt Chrome Extension found [here](https://chrome.google.com/webstore/detail/cookiestxt/njabckikapfpffapmjgojcnbfjonfjfg)
+2. Log in to YouTube
+3. Open the cookies.txt extension and copy the entire contents
+4. Paste the contents into a file named `cookies.txt`
 
 ## Data Directory Structure
 
@@ -140,3 +155,21 @@ data
       └── rss.xml
  ...
 ```
+
+## Advanced Parameters
+
+- **feed.episodeNumbers** - String containing regex used to extract episode number from video title - _Default: no episode numbers_
+- **feed.cleanTitles** - Array of 2-item sub-arrays where the first element of each sub-array is a regex to match part of an episode title and the second element is a string replacement for any matches found - _Default: empty_
+- **feed.titleCase** - When set to true, episode titles are converted to title case - _Default: false_
+
+#### Episode Numbers:
+
+In these regex, you must place the leftmost set of parentheses around the actual episode number. For example, `"#([0-9]+)"` or `"Episode ([0-9]+)."` will work, but `"(#[0-9]+)"` or `"[0-9]+"` will not work.
+
+_Example:_ `"Ep ([0-9]+)"` would be used to extract the episode number (`123`) from a video title that looks like this: `This is my podcast title | Ep 123`.
+
+#### Clean Titles:
+
+The string replacement (second element of the sub-array) can use the RegExp.$1-$9 properties (see [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/n) for more info on how these are used). Common separators (`-` and `|`) are cleaned up automatically.
+
+_Example:_ `[["Podcast Name", ""], ["Ep ([0-9]+)", "#$1"]]` will transform `Podcast Episode Title | Podcast Name | Ep 123` into `Podcast Episode Title | #123`.

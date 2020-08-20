@@ -18,16 +18,31 @@ const updateRssFeeds = (feeds) => {
       imageUrl: `${hostname}/${feed.id}/cover.png`,
     });
 
-    feed.videos.map((video) =>
+    feed.videos.map((video) => {
+      var title = feed.cleanTitles
+        ? cleanTitle(video.title, feed.cleanTitles)
+        : video.title;
+
+      title = feed.titleCase ? toTitleCase(title) : title;
+
+      const episodeNumber =
+        feed.episodeNumbers &&
+        new RegExp(feed.episodeNumbers, 'gi').test(video.title) &&
+        !isNaN(RegExp.$1)
+          ? { itunesEpisode: Number(RegExp.$1) }
+          : {};
+
       rssFeed.addItem({
-        title: video.title,
+        title: title,
+        itunesTitle: title,
         description: video.description,
         date: new Date(video.date),
         enclosure: { url: `${hostname}/content/${video.id}.mp4` },
         url: `https://www.youtube.com/watch?v=${video.id}`,
         itunesDuration: video.duration,
-      })
-    );
+        ...episodeNumber,
+      });
+    });
 
     if (!fs.existsSync(getFeedDirectory(feed.id))) {
       fs.mkdirSync(getFeedDirectory(feed.id), { recursive: true });
@@ -38,5 +53,28 @@ const updateRssFeeds = (feeds) => {
     fs.writeFileSync(file, contents);
   });
 };
+
+const cleanTitle = (title, cleanTitlesConfig) => {
+  var cleanTitle = title;
+
+  cleanTitlesConfig.forEach((item) => {
+    cleanTitle = cleanTitle.replace(new RegExp(item[0], 'gi'), item[1]);
+  });
+
+  cleanTitle = cleanTitle
+    .replace(/(^[\s|\-]+|[\s|\-]+$)/g, '')
+    .replace(/([\s]+[\-]+[\s\-\|]+)/g, ' - ')
+    .replace(/([\s]+[\|]+[\s\-\|]+)/g, ' | ')
+    .replace(/\s+/g, ' ');
+
+  return cleanTitle;
+};
+
+const toTitleCase = (title) =>
+  title
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.replace(word[0], word[0].toUpperCase()))
+    .join(' ');
 
 module.exports = { updateRssFeeds };

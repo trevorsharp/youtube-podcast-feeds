@@ -50,17 +50,17 @@ const getVideosByPlaylistId = async (playlistId) => {
     })
     .then((response) =>
       Promise.all(
-        response.data.items.map((item) => {
+        response.data?.items?.map((item) => {
           return youtube.videos
             .list({
-              part: ['contentDetails'],
+              part: ['snippet,contentDetails'],
               id: [item.snippet.resourceId.videoId],
             })
             .then((response) => ({
               id: item.snippet.resourceId.videoId,
               title: item.snippet.title,
               description: item.snippet.description,
-              date: item.snippet.publishedAt,
+              date: response.data?.items[0]?.snippet?.publishedAt,
               duration: moment
                 .duration(response.data?.items[0]?.contentDetails?.duration)
                 .asSeconds(),
