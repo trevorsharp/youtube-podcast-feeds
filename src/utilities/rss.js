@@ -19,9 +19,11 @@ const updateRssFeeds = (feeds) => {
     });
 
     feed.videos.map((video) => {
-      const title = feed.cleanTitles
+      var title = feed.cleanTitles
         ? cleanTitle(video.title, feed.cleanTitles)
         : video.title;
+
+      title = feed.titleCase ? toTitleCase(title) : title;
 
       const episodeNumber =
         feed.episodeNumbers &&
@@ -67,5 +69,12 @@ const cleanTitle = (title, cleanTitlesConfig) => {
 
   return cleanTitle;
 };
+
+const toTitleCase = (title) =>
+  title
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.replace(word[0], word[0].toUpperCase()))
+    .join(' ');
 
 module.exports = { updateRssFeeds };

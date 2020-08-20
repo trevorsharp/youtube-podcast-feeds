@@ -73,6 +73,9 @@
               "maxItems": 2
             },
             "minItems": 0
+          },
+          "titleCase": {
+            "type": "boolean"
           }
         },
         "anyOf": [

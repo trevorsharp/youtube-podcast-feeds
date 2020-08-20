@@ -160,6 +160,7 @@ data
 
 - **feed.episodeNumbers** - String containing regex used to extract episode number from video title - _Default: no episode numbers_
 - **feed.cleanTitles** - Array of 2-item sub-arrays where the first element of each sub-array is a regex to match part of an episode title and the second element is a string replacement for any matches found - _Default: empty_
+- **feed.titleCase** - When set to true, episode titles are converted to title case - _Default: false_
 
 #### Episode Numbers:
 
