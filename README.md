@@ -105,15 +105,15 @@ Create a file named `config.json` with the contents above and fill in the follow
 
 #### Episode Numbers:
 
-In these regex, you must place the leftmost set of parentheses around the actual episode number. For example, `"#(\\d+)"` or `"Episode (\\d+)."` will work, but `"(#\\d+)"` or `"\\d+"` will not work.
+In these regex, you must place the leftmost set of parentheses around the actual episode number. For example, `"#([0-9]+)"` or `"Episode ([0-9]+)."` will work, but `"(#[0-9]+)"` or `"[0-9]+"` will not work.
 
-_Example:_ `"Ep (\\d+)"` would be used to extract the episode number (`123`) from a video title that looks like this: `This is my podcast title | Ep 123`.
+_Example:_ `"Ep ([0-9]+)"` would be used to extract the episode number (`123`) from a video title that looks like this: `This is my podcast title | Ep 123`.
 
 #### Clean Titles:
 
 The string replacement (second element of the sub-array) can use the RegExp.$1-$9 properties (see [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/n) for more info on how these are used). Common separators (`-` and `|`) are cleaned up automatically.
 
-_Example:_ `[["Podcast Name", ""], ["Ep (\\d+)", "#$1"]]` will transform `Podcast Episode Title | Podcast Name | Ep 123` into `Podcast Episode Title | #123`.
+_Example:_ `[["Podcast Name", ""], ["Ep ([0-9]+)", "#$1"]]` will transform `Podcast Episode Title | Podcast Name | Ep 123` into `Podcast Episode Title | #123`.
 
 ### nginx.conf
 
