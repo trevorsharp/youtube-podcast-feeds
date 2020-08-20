@@ -57,6 +57,10 @@
             "type": "string",
             "minLength": 1
           },
+          "episodeNumbers": {
+            "type": "string",
+            "minLength": 1
+          },
           "cleanTitles": {
             "type": "array",
             "items": {
