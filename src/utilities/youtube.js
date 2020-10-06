@@ -50,22 +50,28 @@ const getVideosByPlaylistId = async (playlistId) => {
     })
     .then((response) =>
       Promise.all(
-        response.data?.items?.map((item) => {
-          return youtube.videos
-            .list({
-              part: ['snippet,contentDetails'],
-              id: [item.snippet.resourceId.videoId],
-            })
-            .then((response) => ({
-              id: item.snippet.resourceId.videoId,
-              title: item.snippet.title,
-              description: item.snippet.description,
-              date: response.data?.items[0]?.snippet?.publishedAt,
-              duration: moment
-                .duration(response.data?.items[0]?.contentDetails?.duration)
-                .asSeconds(),
-            }));
-        })
+        response.data?.items
+          ?.map((item) => {
+            return youtube.videos
+              .list({
+                part: ['snippet,contentDetails'],
+                id: [item.snippet.resourceId.videoId],
+              })
+              .then((response) => {
+                const videoDetails = response.data?.items[0];
+                return {
+                  id: item.snippet.resourceId.videoId,
+                  title: item.snippet.title,
+                  description: item.snippet.description,
+                  date: videoDetails?.snippet?.publishedAt,
+                  duration: moment
+                    .duration(videoDetails?.contentDetails?.duration)
+                    .asSeconds(),
+                  isLive: videoDetails?.snippet?.liveBroadcastContent != 'none',
+                };
+              });
+          })
+          .filter((item) => !item.isLive)
       )
     )
     .catch(() => {
