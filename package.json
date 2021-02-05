@@ -7,7 +7,7 @@
   "private": true,
   "dependencies": {
     "ajv": "^6.12.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "googleapis": "^52.1.0",
     "moment": "^2.27.0",
     "moment-duration-format": "^2.3.2",
