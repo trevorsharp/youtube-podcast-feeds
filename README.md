@@ -122,7 +122,7 @@ Create a file named `nginx.conf` with the contents above. If you are hosting oth
 
 ### cookies.txt (Optional)
 
-If you want to download YouTube content that requires user authentication to download, you will need to add a cookies.txt file to your configuration. One reason for needing this is to download member-only videos. Note that the source of these videos (channel, user, or playlist) still must be either public or unlisted. For member-only videos, I recommend creating an unlisted playlist and manually adding the videos that you want to have available in the podcast feed.
+If you want to download YouTube content that requires user authentication to download, you will need to add a cookies.txt file to your configuration. One reason for needing this is to download members-only videos. Note that the source of these videos (channel, user, or playlist) still must be either public or unlisted. For members-only videos, I recommend going to the channel's home page and scrolling down to find an auto-generated playlist titled "Members-only videos" which will contain all the videos posted for members of the channel.
 
 To generate this file:
 
