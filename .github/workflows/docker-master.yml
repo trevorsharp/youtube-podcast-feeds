@@ -3,6 +3,7 @@ name: Build and Push Docker
 on:
   push:
     branches: [master]
+    tags: 'v*.*.*'
 
 jobs:
   build:
