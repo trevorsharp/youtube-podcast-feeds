@@ -14,5 +14,7 @@ yarn-error.log*
 
 data/
 docker-compose.yml
-config.json
+config/development.json
+config/production.json
 test/
+build/

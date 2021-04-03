@@ -53,8 +53,6 @@ services:
 
 Create a file named `docker-compose.yml` with the contents above and substitute in the file path to your config files and the file path to your data directory.
 
-**Note:** The docker image in the file above is for x86_64 architecture. For an arm64 version of the container, add `-arm64` to the end of the container's tag (`trevorsharp/youtube-podcast-feeds:latest-arm64`).
-
 ### config.json
 
 ```
