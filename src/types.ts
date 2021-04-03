@@ -20,5 +20,4 @@ export interface Video {
   date: string;
   description: string;
   duration: number;
-  isProcessed: boolean;
 }

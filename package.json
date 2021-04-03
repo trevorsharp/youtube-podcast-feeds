@@ -27,6 +27,6 @@
   "scripts": {
     "build": "rm -rf ./build && tsc --build tsconfig.json",
     "start": "yarn build && node ./build/index.js",
-    "start:dev": "nodemon"
+    "start:dev": "export NODE_ENV=development && nodemon"
   }
 }

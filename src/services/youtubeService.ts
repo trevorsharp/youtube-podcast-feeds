@@ -62,23 +62,23 @@ class YouTubeService {
                 part: ['snippet,contentDetails,status'],
                 id: [item?.snippet?.resourceId?.videoId ?? ''],
               })
-              .then(
-                (response): Video => {
-                  const videoDetails = response.data?.items?.shift();
-                  return {
+              .then((response): [Video, boolean] => {
+                const videoDetails = response.data?.items?.shift();
+                return [
+                  {
                     id: item?.snippet?.resourceId?.videoId ?? '',
                     title: item?.snippet?.title ?? '',
                     description: item?.snippet?.description ?? '',
                     date: videoDetails?.snippet?.publishedAt ?? '',
                     duration: moment.duration(videoDetails?.contentDetails?.duration).asSeconds(),
-                    isProcessed: videoDetails?.status?.uploadStatus === 'processed',
-                  };
-                }
-              )
+                  },
+                  videoDetails?.status?.uploadStatus === 'processed',
+                ];
+              })
           ) ?? []
         )
       )
-      .then((result) => result.filter((item) => !item.isProcessed))
+      .then((result) => result.filter((item) => item[1]).map((item) => item[0]))
       .catch(() => {
         log(`Could not find YouTube playlist (${playlistId})`);
         process.exit();
