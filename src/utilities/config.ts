@@ -94,7 +94,7 @@ class Config {
     if (this.audioOnly && this.highQualityVideo)
       this.validationError(
         'Audio Only / High Quality Video',
-        'Cannont Use Both Options At The Same Time'
+        'Cannot Use Both Options At The Same Time'
       );
 
     if (!this.feedConfigs || this.feedConfigs.length < 1)
@@ -106,7 +106,7 @@ class Config {
 
     this.feedConfigs.forEach((feedConfig) => {
       if (
-        !feedConfig.id.match(/^[a-z0-9]+$/i) ||
+        !feedConfig.id.match(/^[-a-z0-9]+$/i) ||
         feedConfig.id === 'content' ||
         feedConfig.id === 'video' ||
         feedConfig.id === 'audio' ||
@@ -143,7 +143,7 @@ class Config {
       if (feedConfig.audioOnly && feedConfig.highQualityVideo)
         this.validationError(
           'Feed Audio Only / Feed High Quality Video',
-          'Cannont Use Both Options At The Same Time'
+          'Cannot Use Both Options At The Same Time'
         );
 
       if (feedConfig.cleanTitles)

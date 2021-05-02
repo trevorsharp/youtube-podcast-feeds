@@ -71,7 +71,7 @@ Create a file named `config.json` with the contents above and fill in the follow
 
 - **hostname** - Hostname that will be used to access podcast feeds and content
 - **apiKey** - YouTube API v3 key
-- **feed.id** - Unique identifier for each feed (letters and numbers only, no spaces)
+- **feed.id** - Unique identifier for each feed (letters, numbers and hyphens only, no spaces)
 - **feed.title** - Title for the podcast (read by podcast clients)
 
 #### Feed Sources:
