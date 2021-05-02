@@ -22,7 +22,7 @@ class RssService {
         (feed.user && `https://www.youtube.com/user/${feed.user}`) ||
         (feed.playlist && `https://www.youtube.com/playlist?list=${feed.playlist}`) ||
         '',
-      imageUrl: `${config.hostname}/${feed.id}/${config.coverArtFileName}`,
+      imageUrl: `${config.hostname}/content/covers/${feed.id}/${config.coverArtFileName}`,
     });
 
     feed.videos.map((video) => {

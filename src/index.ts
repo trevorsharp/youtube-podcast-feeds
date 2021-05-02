@@ -1,5 +1,4 @@
 import express from 'express';
-import fs from 'fs';
 import feedService from './services/feedService';
 import rssService from './services/rssService';
 import videoService from './services/videoService';
@@ -7,9 +6,10 @@ import config from './utilities/config';
 import log from './utilities/log';
 
 const app = express();
-const port = 3000;
+const port = process.env.NODE_ENV === 'development' ? 3000 : 80;
 
 app.use('/content', express.static(`${config.contentDirectory}/`));
+app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 
 app.get('/stream/:videoId', async (req, res) => {
   const result = videoService.getStreamingUrl(req.params.videoId);
