@@ -5,8 +5,13 @@ import log from '../utilities/log';
 import config from '../utilities/config';
 import cache from '../utilities/cache';
 
+interface StreamingUrl {
+  videoUrl?: string;
+  error?: string;
+}
+
 class VideoService {
-  static getStreamingUrl = (videoId: string) => {
+  static getStreamingUrl = (videoId: string): StreamingUrl => {
     const cacheResult = cache.get(`video-url-${videoId}`);
     if (cacheResult) {
       return { videoUrl: cacheResult as string };
@@ -24,7 +29,7 @@ class VideoService {
 
       return { videoUrl };
     } catch (error) {
-      return { videoUrl: '', error: error.message };
+      return { error: error.message };
     }
   };
 

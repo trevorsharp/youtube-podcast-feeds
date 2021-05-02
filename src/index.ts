@@ -14,12 +14,11 @@ app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 app.get('/stream/:videoId', async (req, res) => {
   const result = videoService.getStreamingUrl(req.params.videoId);
 
-  if (result.error) {
-    res.status(500).send(`Error: ${result.error}`);
-    return;
+  if (result.error || !result.videoUrl) {
+    return res.status(500).send(`Error: ${result.error}`);
   }
 
-  return res.redirect(302, result.videoUrl);
+  res.redirect(302, result.videoUrl);
 });
 
 app.get('/:id', (req, res) => {
