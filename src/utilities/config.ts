@@ -9,7 +9,8 @@ class Config {
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
   readonly cookiesFilePath: string;
-  readonly contentFileExtension: string;
+  readonly videoFileExtension: string;
+  readonly audioFileExtension: string;
   readonly hostname: string;
   readonly apiKey: string;
   readonly timeZone: string;
@@ -27,7 +28,8 @@ class Config {
     this.coverArtFileName = 'cover.png';
     this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
-    this.contentFileExtension = '.mp4';
+    this.videoFileExtension = '.mp4';
+    this.audioFileExtension = '.mp3';
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')

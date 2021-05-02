@@ -13,7 +13,7 @@ interface StreamUrl {
 class VideoService {
   static isVideoDownloaded = (videoId: string): boolean =>
     fs.existsSync(config.contentDirectory)
-      ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.contentFileExtension}`)
+      ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.videoFileExtension}`)
       : false;
 
   static getStreamUrl = (videoId: string, audioOnly: boolean = false) => {
@@ -40,49 +40,86 @@ class VideoService {
   };
 
   static downloadNewContent = (feeds: Feed[], onComplete: () => void) => {
-    const videoIdsToDownload: string[] = [];
+    const downloadList: { videoId: string; audioOnly: boolean }[] = [];
 
     if (!fs.existsSync(config.contentDirectory))
       fs.mkdirSync(config.contentDirectory, { recursive: true });
 
-    feeds
-      .filter((feed) => config.isHighQualityVideo(feed.id))
-      .map((feed) => {
-        feed.videos.map(
-          (video) =>
-            !fs
-              .readdirSync(config.contentDirectory)
-              .includes(`${video.id}${config.contentFileExtension}`) &&
-            videoIdsToDownload.push(video.id)
-        );
-      });
+    feeds.forEach((feed) =>
+      feed.videos.forEach((video) => {
+        if (
+          config.isHighQualityVideo(feed.id) &&
+          !fs
+            .readdirSync(config.contentDirectory)
+            .includes(`${video.id}${config.videoFileExtension}`)
+        ) {
+          downloadList.push({ videoId: video.id, audioOnly: false });
+        }
 
-    if (videoIdsToDownload.length === 0) {
+        if (
+          config.isAudioOnly(feed.id) &&
+          !fs
+            .readdirSync(config.contentDirectory)
+            .includes(`${video.id}${config.audioFileExtension}`)
+        ) {
+          downloadList.push({ videoId: video.id, audioOnly: true });
+        }
+      })
+    );
+
+    if (downloadList.length === 0) {
       onComplete();
       return;
     }
 
     if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
 
-    videoIdsToDownload.map((videoId) =>
-      fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
-    );
+    downloadList
+      .filter((item) => item.audioOnly === true)
+      .map((downloadItem) => downloadItem.videoId)
+      .forEach((videoId) =>
+        fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
+      );
 
-    const downloadProcess = spawn('youtube-dl', [
-      '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
-      '--merge-output-format=mp4',
+    const audioDownloadProcess = spawn('youtube-dl', [
+      '--format=bestaudio[ext=m4a]',
+      '--extract-audio',
+      '--audio-format=mp3',
+      '--prefer-ffmpeg',
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
       fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
     ]);
 
-    downloadProcess.stdout.on('data', (data) => log(data));
-    downloadProcess.stderr.on('data', (data) => log(`Download Error: ${data}`));
-    downloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
-    downloadProcess.on('close', (_) => {
+    audioDownloadProcess.stdout.on('data', (data) => log(data));
+    audioDownloadProcess.stderr.on('data', (data) => log(`Download Error: ${data}`));
+    audioDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
+    audioDownloadProcess.on('close', (_) => {
       if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
 
-      onComplete();
+      downloadList
+        .filter((item) => item.audioOnly === false)
+        .map((downloadItem) => downloadItem.videoId)
+        .forEach((videoId) =>
+          fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
+        );
+
+      const videoDownloadProcess = spawn('youtube-dl', [
+        '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
+        '--merge-output-format=mp4',
+        `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
+        `--batch-file=${config.downloadsFilePath}`,
+        fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
+      ]);
+
+      videoDownloadProcess.stdout.on('data', (data) => log(data));
+      videoDownloadProcess.stderr.on('data', (data) => log(`Download Error: ${data}`));
+      videoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
+      videoDownloadProcess.on('close', (_) => {
+        if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
+
+        onComplete();
+      });
     });
   };
 }

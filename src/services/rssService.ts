@@ -42,7 +42,7 @@ class RssService {
 
       const isAudioOnly = config.isAudioOnly(feed.id);
       const enclosure = isAudioOnly
-        ? { url: `${config.hostname}/audio/${video.id}`, type: 'audio/m4a' }
+        ? { url: `${config.hostname}/audio/${video.id}`, type: 'audio/mp3' }
         : { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' };
 
       rssFeed.addItem({

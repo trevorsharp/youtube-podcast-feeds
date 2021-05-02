@@ -12,18 +12,12 @@ app.use('/content', express.static(`${config.contentDirectory}/`));
 app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 
 app.get('/audio/:videoId', async (req, res) => {
-  const result = videoService.getStreamUrl(req.params.videoId, true);
-
-  if (result.error || !result.url) {
-    return res.status(500).send(`Error: ${result.error}`);
-  }
-
-  res.redirect(302, result.url);
+  res.redirect(302, `/content/${req.params.videoId}${config.audioFileExtension}`);
 });
 
 app.get('/video/:videoId', async (req, res) => {
   if (videoService.isVideoDownloaded(req.params.videoId)) {
-    return res.redirect(302, `/content/${req.params.videoId}${config.contentFileExtension}`);
+    return res.redirect(302, `/content/${req.params.videoId}${config.videoFileExtension}`);
   }
 
   const result = videoService.getStreamUrl(req.params.videoId);
