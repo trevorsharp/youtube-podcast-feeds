@@ -1,9 +1,8 @@
 import fs from 'fs';
 import { Feed, FeedConfig } from '../types';
 import youtubeService from './youtubeService';
-import downloadService from './downloadService';
+import videoService from './videoService';
 import cleanupService from './cleanupService';
-import rssService from './rssService';
 import coverArtService from './coverArtService';
 import config from '../utilities/config';
 import log from '../utilities/log';
@@ -18,9 +17,7 @@ class FeedUpdateService {
     );
 
     cleanupService.removeOldContent(feeds);
-
-    downloadService.downloadNewContent(feeds, () => {
-      rssService.updateRssFeeds(feeds);
+    videoService.downloadNewContent(feeds, () => {
       log(`Update Complete`);
     });
   };
@@ -33,33 +30,38 @@ class FeedUpdateService {
     ].filter((video) => (feed.filter ? video.title.match(new RegExp(feed.filter, 'gi')) : true));
 
   private static updateFeed = (feed: Feed) => {
-    FeedUpdateService.getFeedDataFromFile(feed.id)?.videos.map(
+    FeedUpdateService.getFeedData(feed.id)?.videos.map(
       (video) => !feed.videos.some((v) => v.id === video.id) && feed.videos.push(video)
     );
 
+    const maxEpisodes = feed.maxEpisodes != undefined ? feed.maxEpisodes : config.maxEpisodes;
+
     feed.videos
       .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .splice(config.maxEpisodes === 0 ? feed.videos.length : config.maxEpisodes);
+      .splice(maxEpisodes === 0 ? feed.videos.length : maxEpisodes);
 
-    FeedUpdateService.saveFeedDataToFile(feed);
+    FeedUpdateService.saveFeedData(feed);
 
     coverArtService.downloadCoverArtAsync(feed);
 
     return feed;
   };
 
-  private static getFeedDataFromFile = (feedId: string): Feed =>
+  static getFeedData = (feedId: string): Feed =>
     fs.existsSync(FeedUpdateService.getDataFilePath(feedId))
-      ? JSON.parse(fs.readFileSync(FeedUpdateService.getDataFilePath(feedId), 'utf-8'))
+      ? JSON.parse(fs.readFileSync(FeedUpdateService.getDataFilePath(feedId, true), 'utf-8'))
       : undefined;
 
-  private static saveFeedDataToFile = (feed: Feed) =>
-    fs.writeFileSync(FeedUpdateService.getDataFilePath(feed.id), JSON.stringify(feed));
+  private static saveFeedData = (feed: Feed) =>
+    fs.writeFileSync(FeedUpdateService.getDataFilePath(feed.id, true), JSON.stringify(feed));
 
-  private static getDataFilePath = (feedId: string): string => {
+  private static getDataFilePath = (
+    feedId: string,
+    createDirectoryIfNecessary: boolean = false
+  ): string => {
     const file = `${config.getFeedDirectory(feedId)}/${config.feedDataFileName}`;
 
-    if (!fs.existsSync(config.getFeedDirectory(feedId)))
+    if (createDirectoryIfNecessary && !fs.existsSync(config.getFeedDirectory(feedId)))
       fs.mkdirSync(config.getFeedDirectory(feedId), { recursive: true });
 
     return file;

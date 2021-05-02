@@ -2,5 +2,7 @@
   "timeZone": "America/New_York",
   "updateInterval": 2,
   "maxResults": 5,
-  "maxEpisodes": 0
+  "maxEpisodes": 0,
+  "audioOnly": false,
+  "highQualityVideo": false
 }

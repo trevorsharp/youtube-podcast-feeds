@@ -9,14 +9,14 @@ class Config {
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
   readonly cookiesFilePath: string;
-  readonly rssFileName: string;
-  readonly contentFileExtension: string;
+  readonly videoFileExtension: string;
   readonly hostname: string;
   readonly apiKey: string;
   readonly timeZone: string;
   readonly updateInterval: number;
   readonly maxResults: number;
   readonly maxEpisodes: number;
+  readonly highQualityVideo: boolean;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -26,8 +26,7 @@ class Config {
     this.coverArtFileName = 'cover.png';
     this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
-    this.rssFileName = 'rss.xml';
-    this.contentFileExtension = '.mp4';
+    this.videoFileExtension = '.mp4';
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')
@@ -43,6 +42,7 @@ class Config {
     this.updateInterval = config.get('updateInterval');
     this.maxResults = Math.floor(config.get('maxResults'));
     this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
+    this.highQualityVideo = config.get('highQualityVideo');
 
     this.validate();
   }
@@ -53,6 +53,13 @@ class Config {
   }
 
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
+
+  public isHighQualityVideo = (feedId: string) => {
+    const feed = this.feedConfigs.find((feed) => feed.id === feedId);
+    if (!feed) return false;
+    if (feed.highQualityVideo === undefined) return this.highQualityVideo;
+    return feed.highQualityVideo;
+  };
 
   private validate = () => {
     if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s\/]*$/))
@@ -82,8 +89,9 @@ class Config {
 
     this.feedConfigs.forEach((feedConfig) => {
       if (
-        !feedConfig.id.match(/^[a-z0-9]+$/i) ||
+        !feedConfig.id.match(/^[-a-z0-9]+$/i) ||
         feedConfig.id === 'content' ||
+        feedConfig.id === 'video' ||
         feedConfig.id.length < 1
       )
         this.validationError('Feed Id', feedConfig.id);
@@ -107,6 +115,12 @@ class Config {
 
       if (feedConfig.playlist && feedConfig.playlist.length < 1)
         this.validationError('Feed Playlist', feedConfig.playlist);
+
+      if (
+        feedConfig.maxEpisodes !== undefined &&
+        (isNaN(feedConfig.maxEpisodes) || feedConfig.maxEpisodes < 0)
+      )
+        this.validationError('Feed Max Episodes', feedConfig.maxEpisodes.toString());
 
       if (feedConfig.cleanTitles)
         feedConfig.cleanTitles.forEach((cleanTitleItem) => {

@@ -13,7 +13,7 @@ class CleanupService {
     videoFiles.map(
       (file) =>
         !feeds.some((feed) =>
-          feed.videos.map((video) => video.id).includes(file.replace(config.contentFileExtension, ''))
+          feed.videos.map((video) => video.id).includes(file.replace(config.videoFileExtension, ''))
         ) && fs.unlinkSync(`${config.contentDirectory}/${file}`)
     );
   };
