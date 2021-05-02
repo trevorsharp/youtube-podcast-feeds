@@ -56,6 +56,22 @@ class Config {
 
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
 
+  public isAudioOnly = (feedId: string) => {
+    const feed = this.feedConfigs.find((feed) => feed.id === feedId);
+    if (!feed) return false;
+    if (feed.highQualityVideo) return false;
+    if (feed.audioOnly === undefined) return this.audioOnly;
+    return feed.audioOnly;
+  };
+
+  public isHighQualityVideo = (feedId: string) => {
+    const feed = this.feedConfigs.find((feed) => feed.id === feedId);
+    if (!feed) return false;
+    if (feed.audioOnly) return false;
+    if (feed.highQualityVideo === undefined) return this.highQualityVideo;
+    return feed.highQualityVideo;
+  };
+
   private validate = () => {
     if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s\/]*$/))
       this.validationError('Hostname', this.hostname);

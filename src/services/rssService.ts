@@ -40,7 +40,7 @@ class RssService {
           ? { itunesEpisode: Number(RegExp.$1) }
           : {};
 
-      const isAudioOnly = feed.audioOnly || (feed.audioOnly === undefined && config.audioOnly);
+      const isAudioOnly = config.isAudioOnly(feed.id);
       const enclosure = isAudioOnly
         ? { url: `${config.hostname}/audio/${video.id}`, type: 'audio/m4a' }
         : { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' };

@@ -46,10 +46,7 @@ class VideoService {
       fs.mkdirSync(config.contentDirectory, { recursive: true });
 
     feeds
-      .filter(
-        (feed) =>
-          feed.highQualityVideo || (feed.highQualityVideo === undefined && config.highQualityVideo)
-      )
+      .filter((feed) => config.isHighQualityVideo(feed.id))
       .map((feed) => {
         feed.videos.map(
           (video) =>
