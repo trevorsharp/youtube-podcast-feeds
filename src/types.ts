@@ -8,7 +8,9 @@ export interface FeedConfig {
   readonly episodeNumbers: string | undefined;
   readonly titleCase: boolean | undefined;
   readonly cleanTitles: string[][] | undefined;
-  readonly download: boolean | undefined;
+  readonly maxEpisodes: number | undefined;
+  readonly audioOnly: boolean | undefined;
+  readonly highQualityVideo: boolean | undefined;
 }
 
 export interface Feed extends FeedConfig {

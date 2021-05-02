@@ -5,7 +5,8 @@ import cache from '../utilities/cache';
 
 class RssService {
   static getRssFeed = (feedId: string) => {
-    const cacheResult = cache.get(`rss-${feedId}`);
+    const cacheKey = `rss-${feedId}`;
+    const cacheResult = cache.get(cacheKey);
     if (cacheResult) {
       return cacheResult;
     }
@@ -39,16 +40,17 @@ class RssService {
           ? { itunesEpisode: Number(RegExp.$1) }
           : {};
 
-      const videoUrl = `${config.hostname}/${feed.download ? 'content' : 'stream'}/${video.id}${
-        feed.download ? config.contentFileExtension : ''
-      }`;
+      const isAudioOnly = feed.audioOnly || (feed.audioOnly === undefined && config.audioOnly);
+      const enclosure = isAudioOnly
+        ? { url: `${config.hostname}/audio/${video.id}`, type: 'audio/m4a' }
+        : { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' };
 
       rssFeed.addItem({
         title: title,
         itunesTitle: title,
         description: video.description,
         date: new Date(video.date),
-        enclosure: { url: videoUrl, type: 'video/mp4' },
+        enclosure,
         url: `https://www.youtube.com/watch?v=${video.id}`,
         itunesDuration: video.duration,
         ...episodeNumber,
@@ -57,7 +59,7 @@ class RssService {
 
     const rssContent = rssFeed.buildXml();
 
-    cache.set(`rss-${feedId}`, rssContent, config.updateInterval * 3600);
+    cache.set(cacheKey, rssContent, config.updateInterval * 3600);
 
     return rssContent;
   };

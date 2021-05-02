@@ -34,9 +34,11 @@ class FeedUpdateService {
       (video) => !feed.videos.some((v) => v.id === video.id) && feed.videos.push(video)
     );
 
+    const maxEpisodes = feed.maxEpisodes != undefined ? feed.maxEpisodes : config.maxEpisodes;
+
     feed.videos
       .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .splice(config.maxEpisodes === 0 ? feed.videos.length : config.maxEpisodes);
+      .splice(maxEpisodes === 0 ? feed.videos.length : maxEpisodes);
 
     FeedUpdateService.saveFeedData(feed);
 

@@ -16,6 +16,8 @@ class Config {
   readonly updateInterval: number;
   readonly maxResults: number;
   readonly maxEpisodes: number;
+  readonly audioOnly: boolean;
+  readonly highQualityVideo: boolean;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -41,6 +43,8 @@ class Config {
     this.updateInterval = config.get('updateInterval');
     this.maxResults = Math.floor(config.get('maxResults'));
     this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
+    this.audioOnly = config.get('audioOnly');
+    this.highQualityVideo = config.get('highQualityVideo');
 
     this.validate();
   }
@@ -71,6 +75,12 @@ class Config {
     if (isNaN(this.maxEpisodes) || this.maxEpisodes < 0)
       this.validationError('Max Episodes', this.maxEpisodes.toString());
 
+    if (this.audioOnly && this.highQualityVideo)
+      this.validationError(
+        'Audio Only / High Quality Video',
+        'Cannont Use Both Options At The Same Time'
+      );
+
     if (!this.feedConfigs || this.feedConfigs.length < 1)
       this.validationError('Feeds Config', 'Requires At Least One Feed');
 
@@ -82,7 +92,8 @@ class Config {
       if (
         !feedConfig.id.match(/^[a-z0-9]+$/i) ||
         feedConfig.id === 'content' ||
-        feedConfig.id === 'stream' ||
+        feedConfig.id === 'video' ||
+        feedConfig.id === 'audio' ||
         feedConfig.id.length < 1
       )
         this.validationError('Feed Id', feedConfig.id);
@@ -106,6 +117,18 @@ class Config {
 
       if (feedConfig.playlist && feedConfig.playlist.length < 1)
         this.validationError('Feed Playlist', feedConfig.playlist);
+
+      if (
+        feedConfig.maxEpisodes !== undefined &&
+        (isNaN(feedConfig.maxEpisodes) || feedConfig.maxEpisodes < 0)
+      )
+        this.validationError('Feed Max Episodes', feedConfig.maxEpisodes.toString());
+
+      if (feedConfig.audioOnly && feedConfig.highQualityVideo)
+        this.validationError(
+          'Feed Audio Only / Feed High Quality Video',
+          'Cannont Use Both Options At The Same Time'
+        );
 
       if (feedConfig.cleanTitles)
         feedConfig.cleanTitles.forEach((cleanTitleItem) => {

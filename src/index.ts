@@ -11,14 +11,28 @@ const port = process.env.NODE_ENV === 'development' ? 3000 : 80;
 app.use('/content', express.static(`${config.contentDirectory}/`));
 app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 
-app.get('/stream/:videoId', async (req, res) => {
-  const result = videoService.getStreamingUrl(req.params.videoId);
+app.get('/audio/:videoId', async (req, res) => {
+  const result = videoService.getStreamUrl(req.params.videoId, true);
 
-  if (result.error || !result.videoUrl) {
+  if (result.error || !result.url) {
     return res.status(500).send(`Error: ${result.error}`);
   }
 
-  res.redirect(302, result.videoUrl);
+  res.redirect(302, result.url);
+});
+
+app.get('/video/:videoId', async (req, res) => {
+  if (videoService.isVideoDownloaded(req.params.videoId)) {
+    return res.redirect(302, `/content/${req.params.videoId}${config.contentFileExtension}`);
+  }
+
+  const result = videoService.getStreamUrl(req.params.videoId);
+
+  if (result.error || !result.url) {
+    return res.status(500).send(`Error: ${result.error}`);
+  }
+
+  res.redirect(302, result.url);
 });
 
 app.get('/:id', (req, res) => {

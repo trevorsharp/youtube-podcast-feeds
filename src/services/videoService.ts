@@ -5,29 +5,35 @@ import log from '../utilities/log';
 import config from '../utilities/config';
 import cache from '../utilities/cache';
 
-interface StreamingUrl {
-  videoUrl?: string;
+interface StreamUrl {
+  url?: string;
   error?: string;
 }
 
 class VideoService {
-  static getStreamingUrl = (videoId: string): StreamingUrl => {
-    const cacheResult = cache.get(`video-url-${videoId}`);
+  static isVideoDownloaded = (videoId: string): boolean =>
+    fs.existsSync(config.contentDirectory)
+      ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.contentFileExtension}`)
+      : false;
+
+  static getStreamUrl = (videoId: string, audioOnly: boolean = false) => {
+    const cacheKey = `${audioOnly ? 'audio' : 'video'}-url-${videoId}`;
+    const cacheResult = cache.get(cacheKey);
     if (cacheResult) {
-      return { videoUrl: cacheResult as string };
+      return { url: cacheResult as string };
     }
 
     const youtubeUrl = `http://www.youtube.com/watch?v=${videoId}`;
     try {
-      const videoUrl = execSync(
-        `youtube-dl -g --format=best[ext=mp4] ${
+      const url = execSync(
+        `youtube-dl -g --format=${audioOnly ? 'bestaudio[ext=m4a]' : 'best[ext=mp4]'} ${
           fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : ''
         } ${youtubeUrl}`
       ).toString();
 
-      cache.set(`video-url-${videoId}`, videoUrl, 3600);
+      cache.set(cacheKey, url, 3600);
 
-      return { videoUrl };
+      return { url };
     } catch (error) {
       return { error: error.message };
     }
@@ -40,7 +46,10 @@ class VideoService {
       fs.mkdirSync(config.contentDirectory, { recursive: true });
 
     feeds
-      .filter((feed) => feed.download)
+      .filter(
+        (feed) =>
+          feed.highQualityVideo || (feed.highQualityVideo === undefined && config.highQualityVideo)
+      )
       .map((feed) => {
         feed.videos.map(
           (video) =>

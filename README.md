@@ -1,12 +1,12 @@
 # youtube-podcast-feeds
 
-Create video podcast feeds from YouTube videos
+Create podcast feeds from YouTube videos
 
 ## Features
 
-- Download or Stream YouTube videos from channels, users, or playlists
-- Generate RSS feeds that can be added to podcast apps with support for video podcasts (e.g. Apple Podcasts)
-- Simple web server for serving RSS feeds and video files
+- Generate RSS feeds that can be added to podcast apps (with support for video podcasts in apps like Apple Podcasts)
+- Simple web server for serving RSS feed data and video files
+- Download YouTube videos from channels, users, or playlists for higher quality
 
 ## Setup Using Docker
 
@@ -18,12 +18,12 @@ Prerequisites:
 
 To run this application using docker:
 
-1. Create a directory to store data files (can be on an external drive or NAS, useful when choosing download videos option)
+1. Create a directory to store data files (can be on an external drive or NAS, which is handy when using the highQualityVideo option)
 2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, and optionally `cookies.txt`)
 3. Run `docker-compose up -d` in the folder where your `docker-compose.yml` lives
 4. Check the logs using `docker-compose logs -f` to see if there are any errors in your configuration
 5. (Optional) - Replace `cover.png` files in the data directory with custom cover artwork (YouTube channel or user profile pictures are pulled automatically on first run)
-6. Wait for the first update run to complete all downloads
+6. Wait for the first update run to pull feed data and download any videos if applicable
 7. Add podcast feeds to your podcast app of choice with the URL `http://hostname/feedId`
 
 ### docker-compose.yml
@@ -85,9 +85,16 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **timeZone** - Name of time zone used for logging - _Default: America/New_York_
 - **updateInterval** - Interval for updating feeds (in hours) - _Default: 2_
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
-- **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
+- **maxEpisodes** - Maximum number of videos to keep (per feed), useful when using highQualityVideo option to limit storage usage - _Default: unlimited_
+- **audioOnly** - If true, podcast feeds will default to serving audio only / no video - _Default: false_
+- **highQualityVideo** - If true, podcast feeds will default to downloading videos from YouTube into the data folder using the highest quality available in mp4 format (usually 1080p vs 720p without using this option). WARNING: Setting this to true will significantly increase the amount of storage space and CPU usage required to run - _Default: false_
+
+#### Optional Feed Parameters:
+
+- **feed.audioOnly** - Overrides the global setting for a specific podcast feed - _Default: none / uses global setting_
+- **feed.highQualityVideo** - Overrides the global setting for a specific podcast feed - _Default: none / uses global setting_
+- **feed.maxEpisodes** - Overrides the global setting for a specific podcast feed - _Default: none / uses global setting_
 - **feed.filter** - String containing regex used to filter videos. Only videos with titles that have a match for this regex will be added to the feed - _Default: none_
-- **feed.download** - Boolean for downloading videos into the data folder instead of streaming from YouTube directly. When videos are downloaded to the server, 1080p quality will typically be used as opposed to a 720p max for streamed videos. - _Default: false_
 
 See [Advanced Parameters](#advanced-parameters) for more options
 
