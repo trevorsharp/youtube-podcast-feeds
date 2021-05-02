@@ -4,7 +4,7 @@ Create podcast feeds from YouTube videos
 
 ## Features
 
-- Generate RSS feeds that can be added to podcast apps (with support for video podcasts in apps like Apple Podcasts)
+- Generate RSS feeds that can be added to podcast apps with support for video podcasts (e.g. Apple Podcasts)
 - Simple web server for serving RSS feed data and video files
 - Download YouTube videos from channels, users, or playlists for higher quality
 
@@ -85,15 +85,13 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **timeZone** - Name of time zone used for logging - _Default: America/New_York_
 - **updateInterval** - Interval for updating feeds (in hours) - _Default: 2_
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
-- **maxEpisodes** - Maximum number of videos to keep (per feed), useful when using the audioOnly or highQualityVideo options to limit storage usage - _Default: unlimited_
-- **audioOnly** - If true, podcast feeds will default to downloading audio from YouTube into the data folder without video - _Default: false_
+- **maxEpisodes** - Maximum number of videos to keep (per feed), useful when using the highQualityVideo option to limit storage usage - _Default: unlimited_
 - **highQualityVideo** - If true, podcast feeds will default to downloading videos from YouTube into the data folder using the highest quality available in mp4 format (usually 1080p vs 720p without using this option). Will provide the lower quality version until the high quality version has downloaded. - _Default: false_
 
-**WARNING:** Setting audioOnly or highQualityVideo to true will significantly increase the amount of storage space and CPU usage required to run
+**WARNING:** Setting highQualityVideo to true will significantly increase the amount of storage space and CPU usage required to run
 
 #### Optional Feed Parameters:
 
-- **feed.audioOnly** - Overrides the global setting for a specific podcast feed - _Default: none / uses global setting_
 - **feed.highQualityVideo** - Overrides the global setting for a specific podcast feed - _Default: none / uses global setting_
 - **feed.maxEpisodes** - Overrides the global setting for a specific podcast feed - _Default: none / uses global setting_
 - **feed.filter** - String containing regex used to filter videos. Only videos with titles that have a match for this regex will be added to the feed - _Default: none_

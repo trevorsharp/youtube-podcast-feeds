@@ -40,17 +40,12 @@ class RssService {
           ? { itunesEpisode: Number(RegExp.$1) }
           : {};
 
-      const isAudioOnly = config.isAudioOnly(feed.id);
-      const enclosure = isAudioOnly
-        ? { url: `${config.hostname}/audio/${video.id}`, type: 'audio/mp3' }
-        : { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' };
-
       rssFeed.addItem({
         title: title,
         itunesTitle: title,
         description: video.description,
         date: new Date(video.date),
-        enclosure,
+        enclosure: { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' },
         url: `https://www.youtube.com/watch?v=${video.id}`,
         itunesDuration: video.duration,
         ...episodeNumber,

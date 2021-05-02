@@ -9,7 +9,6 @@ export interface FeedConfig {
   readonly titleCase: boolean | undefined;
   readonly cleanTitles: string[][] | undefined;
   readonly maxEpisodes: number | undefined;
-  readonly audioOnly: boolean | undefined;
   readonly highQualityVideo: boolean | undefined;
 }
 

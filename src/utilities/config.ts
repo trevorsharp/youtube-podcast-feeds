@@ -10,14 +10,12 @@ class Config {
   readonly downloadsFilePath: string;
   readonly cookiesFilePath: string;
   readonly videoFileExtension: string;
-  readonly audioFileExtension: string;
   readonly hostname: string;
   readonly apiKey: string;
   readonly timeZone: string;
   readonly updateInterval: number;
   readonly maxResults: number;
   readonly maxEpisodes: number;
-  readonly audioOnly: boolean;
   readonly highQualityVideo: boolean;
   readonly feedConfigs: FeedConfig[];
 
@@ -29,7 +27,6 @@ class Config {
     this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
-    this.audioFileExtension = '.mp3';
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')
@@ -45,7 +42,6 @@ class Config {
     this.updateInterval = config.get('updateInterval');
     this.maxResults = Math.floor(config.get('maxResults'));
     this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
-    this.audioOnly = config.get('audioOnly');
     this.highQualityVideo = config.get('highQualityVideo');
 
     this.validate();
@@ -58,18 +54,9 @@ class Config {
 
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
 
-  public isAudioOnly = (feedId: string) => {
-    const feed = this.feedConfigs.find((feed) => feed.id === feedId);
-    if (!feed) return false;
-    if (feed.highQualityVideo) return false;
-    if (feed.audioOnly === undefined) return this.audioOnly;
-    return feed.audioOnly;
-  };
-
   public isHighQualityVideo = (feedId: string) => {
     const feed = this.feedConfigs.find((feed) => feed.id === feedId);
     if (!feed) return false;
-    if (feed.audioOnly) return false;
     if (feed.highQualityVideo === undefined) return this.highQualityVideo;
     return feed.highQualityVideo;
   };
@@ -93,12 +80,6 @@ class Config {
     if (isNaN(this.maxEpisodes) || this.maxEpisodes < 0)
       this.validationError('Max Episodes', this.maxEpisodes.toString());
 
-    if (this.audioOnly && this.highQualityVideo)
-      this.validationError(
-        'Audio Only / High Quality Video',
-        'Cannot Use Both Options At The Same Time'
-      );
-
     if (!this.feedConfigs || this.feedConfigs.length < 1)
       this.validationError('Feeds Config', 'Requires At Least One Feed');
 
@@ -111,7 +92,6 @@ class Config {
         !feedConfig.id.match(/^[-a-z0-9]+$/i) ||
         feedConfig.id === 'content' ||
         feedConfig.id === 'video' ||
-        feedConfig.id === 'audio' ||
         feedConfig.id.length < 1
       )
         this.validationError('Feed Id', feedConfig.id);
@@ -141,12 +121,6 @@ class Config {
         (isNaN(feedConfig.maxEpisodes) || feedConfig.maxEpisodes < 0)
       )
         this.validationError('Feed Max Episodes', feedConfig.maxEpisodes.toString());
-
-      if (feedConfig.audioOnly && feedConfig.highQualityVideo)
-        this.validationError(
-          'Feed Audio Only / Feed High Quality Video',
-          'Cannot Use Both Options At The Same Time'
-        );
 
       if (feedConfig.cleanTitles)
         feedConfig.cleanTitles.forEach((cleanTitleItem) => {

@@ -49,16 +49,19 @@ class FeedUpdateService {
 
   static getFeedData = (feedId: string): Feed =>
     fs.existsSync(FeedUpdateService.getDataFilePath(feedId))
-      ? JSON.parse(fs.readFileSync(FeedUpdateService.getDataFilePath(feedId), 'utf-8'))
+      ? JSON.parse(fs.readFileSync(FeedUpdateService.getDataFilePath(feedId, true), 'utf-8'))
       : undefined;
 
   private static saveFeedData = (feed: Feed) =>
-    fs.writeFileSync(FeedUpdateService.getDataFilePath(feed.id), JSON.stringify(feed));
+    fs.writeFileSync(FeedUpdateService.getDataFilePath(feed.id, true), JSON.stringify(feed));
 
-  private static getDataFilePath = (feedId: string): string => {
+  private static getDataFilePath = (
+    feedId: string,
+    createDirectoryIfNecessary: boolean = false
+  ): string => {
     const file = `${config.getFeedDirectory(feedId)}/${config.feedDataFileName}`;
 
-    if (!fs.existsSync(config.getFeedDirectory(feedId)))
+    if (createDirectoryIfNecessary && !fs.existsSync(config.getFeedDirectory(feedId)))
       fs.mkdirSync(config.getFeedDirectory(feedId), { recursive: true });
 
     return file;

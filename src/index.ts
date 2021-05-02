@@ -11,10 +11,6 @@ const port = process.env.NODE_ENV === 'development' ? 3000 : 80;
 app.use('/content', express.static(`${config.contentDirectory}/`));
 app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 
-app.get('/audio/:videoId', async (req, res) => {
-  res.redirect(302, `/content/${req.params.videoId}${config.audioFileExtension}`);
-});
-
 app.get('/video/:videoId', async (req, res) => {
   if (videoService.isVideoDownloaded(req.params.videoId)) {
     return res.redirect(302, `/content/${req.params.videoId}${config.videoFileExtension}`);
