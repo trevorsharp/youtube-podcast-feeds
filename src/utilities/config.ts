@@ -9,7 +9,6 @@ class Config {
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
   readonly cookiesFilePath: string;
-  readonly rssFileName: string;
   readonly contentFileExtension: string;
   readonly hostname: string;
   readonly apiKey: string;
@@ -26,7 +25,6 @@ class Config {
     this.coverArtFileName = 'cover.png';
     this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
-    this.rssFileName = 'rss.xml';
     this.contentFileExtension = '.mp4';
 
     this.hostname = config.has('hostname')
@@ -84,6 +82,7 @@ class Config {
       if (
         !feedConfig.id.match(/^[a-z0-9]+$/i) ||
         feedConfig.id === 'content' ||
+        feedConfig.id === 'stream' ||
         feedConfig.id.length < 1
       )
         this.validationError('Feed Id', feedConfig.id);

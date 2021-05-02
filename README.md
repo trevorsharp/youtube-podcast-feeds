@@ -4,9 +4,9 @@ Create video podcast feeds from YouTube videos
 
 ## Features
 
-- Download YouTube videos from channels, users, or playlists
+- Download or Stream YouTube videos from channels, users, or playlists
 - Generate RSS feeds that can be added to podcast apps with support for video podcasts (e.g. Apple Podcasts)
-- Simple web server for hosting RSS feeds and video files
+- Simple web server for serving RSS feeds and video files
 
 ## Setup Using Docker
 
@@ -18,8 +18,8 @@ Prerequisites:
 
 To run this application using docker:
 
-1. Create a directory to store data files (can be on an external drive or NAS)
-2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, `nginx.conf`, and optionally `cookies.txt`)
+1. Create a directory to store data files (can be on an external drive or NAS, useful when choosing download videos option)
+2. Create the configuration files as described below (`docker-compose.yml`, `config.json`, and optionally `cookies.txt`)
 3. Run `docker-compose up -d` in the folder where your `docker-compose.yml` lives
 4. Check the logs using `docker-compose logs -f` to see if there are any errors in your configuration
 5. (Optional) - Replace `cover.png` files in the data directory with custom cover artwork (YouTube channel or user profile pictures are pulled automatically on first run)
@@ -35,20 +35,13 @@ services:
     image: trevorsharp/youtube-podcast-feeds:latest
     container_name: youtube-podcast-feeds
     restart: always
+    ports:
+      - 80:80
     volumes:
       - REPLACE_WITH_CONFIG_DIRECTORY_PATH/config.json:/app/config.json
       - REPLACE_WITH_DATA_DIRECTORY_PATH:/app/data
       # Remove the following line if you are not using a cookies.txt file
       - REPLACE_WITH_COOKIES_DIRECTORY_PATH/cookies.txt:/app/cookies.txt
-  youtube-podcast-feeds-webserver:
-    image: nginx:alpine
-    restart: always
-    container_name: youtube-podcast-feeds-webserver
-    ports:
-      - 80:80
-    volumes:
-      - REPLACE_WITH_CONFIG_DIRECTORY_PATH/nginx.conf:/etc/nginx/nginx.conf
-      - REPLACE_WITH_DATA_DIRECTORY_PATH:/app/data
 ```
 
 Create a file named `docker-compose.yml` with the contents above and substitute in the file path to your config files and the file path to your data directory.
@@ -94,29 +87,11 @@ Create a file named `config.json` with the contents above and fill in the follow
 - **maxResults** - Number of videos to search for when updating (per feed) - _Default: 5_
 - **maxEpisodes** - Maximum number of videos to keep (per feed) - _Default: unlimited_
 - **feed.filter** - String containing regex used to filter videos. Only videos with titles that have a match for this regex will be added to the feed - _Default: none_
+- **feed.download** - Boolean for downloading videos into the data folder instead of streaming from YouTube directly. When videos are downloaded to the server, 1080p quality will typically be used as opposed to a 720p max for streamed videos. - _Default: false_
 
 See [Advanced Parameters](#advanced-parameters) for more options
 
 **Note:** Regex are evaluated case insensitive. Be sure to double escape any backslashes (e.g. use `"\\s"` for a whitespace character instead of just `"\s"`)
-
-### nginx.conf
-
-```
-events {}
-http {
-  server {
-    listen 80;
-    server_name _;
-
-    location / {
-      root /app/data;
-      index rss.xml;
-    }
-  }
-}
-```
-
-Create a file named `nginx.conf` with the contents above. If you are hosting other web services on the machine, you will likely need to customize the nginx config to work alongside those other services (or use a different port by changing the port configuration in your `docker-compose.yml`).
 
 ### cookies.txt (Optional)
 
@@ -145,12 +120,10 @@ data
  └── feedId1
  |    └── cover.png
  |    └── feedData.json
- |    └── rss.xml
  |
  └── feedId2
       └── cover.png
       └── feedData.json
-      └── rss.xml
  ...
 ```
 
