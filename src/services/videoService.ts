@@ -70,6 +70,7 @@ class VideoService {
     );
 
     const videoDownloadProcess = spawn('youtube-dl', [
+      '-i',
       '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
       '--merge-output-format=mp4',
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
