@@ -4,6 +4,8 @@ import config from '../utilities/config';
 import cache from '../utilities/cache';
 
 class RssService {
+  static clearCache = (feedId: string) => cache.delete(`rss-${feedId}`);
+
   static getRssFeed = (feedId: string) => {
     const cacheKey = `rss-${feedId}`;
     const cacheResult = cache.get(cacheKey);

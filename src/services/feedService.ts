@@ -2,6 +2,7 @@ import fs from 'fs';
 import { Feed, FeedConfig } from '../types';
 import youtubeService from './youtubeService';
 import videoService from './videoService';
+import rssService from './rssService';
 import cleanupService from './cleanupService';
 import coverArtService from './coverArtService';
 import config from '../utilities/config';
@@ -15,6 +16,8 @@ class FeedUpdateService {
         return FeedUpdateService.updateFeed({ ...feed, videos });
       })
     );
+
+    feeds.forEach((feed) => rssService.clearCache(feed.id));
 
     cleanupService.removeOldContent(feeds);
     videoService.downloadNewContent(feeds, () => {
