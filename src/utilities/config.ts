@@ -54,13 +54,6 @@ class Config {
 
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
 
-  public isHighQualityVideo = (feedId: string) => {
-    const feed = this.feedConfigs.find((feed) => feed.id === feedId);
-    if (!feed) return false;
-    if (feed.highQualityVideo === undefined) return this.highQualityVideo;
-    return feed.highQualityVideo;
-  };
-
   private validate = () => {
     if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s\/]*$/))
       this.validationError('Hostname', this.hostname);
