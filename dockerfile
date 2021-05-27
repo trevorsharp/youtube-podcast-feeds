@@ -15,5 +15,5 @@ RUN yarn build
 
 ENV NODE_ENV=production
 CMD cp /app/config.json /app/config/production.json 2>/dev/null \
-  && pip3 install --upgrade youtube-dl && node /app/build/index.js \
+  && pip3 install --upgrade youtube-dl &> /dev/null && node /app/build/index.js \
   || echo 'Missing File (config.json) - See README For More Information'
