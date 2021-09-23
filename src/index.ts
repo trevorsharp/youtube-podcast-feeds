@@ -28,12 +28,38 @@ app.get('/video/:videoId', async (req, res) => {
 app.get('/:id', (req, res) => {
   try {
     const rss = rssService.getRssFeed(req.params.id);
+    if (rss === '') {
+      res.redirect('/');
+      return;
+    }
     res.setHeader('content-type', 'application/rss+xml');
     res.send(rss);
   } catch (error) {
     res.status(500).send(error);
   }
 });
+
+app.get('/', (_, res) => {
+  try {
+    const feedLinks = config.feedConfigs
+      .map((feedConfig) => {
+        var title = feedConfig.title;
+        const url = `${config.hostname}/${feedConfig.id}`;
+        return `<strong>${title}</strong> &mdash; <a href="${url}">${url}</a>`;
+      })
+      .reduce(
+        (accumulator, value) => `${accumulator}<p>${value}</p>`,
+        '<html><body style="font-family: sans-serif; padding: 50px;"><h2>Podcast Feeds</h2>'
+      )
+      .concat(`</ul></body></html>`);
+
+    res.send(feedLinks);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+app.get('*', (_, res) => res.redirect('/'));
 
 app.listen(port, () => {
   log(`Listening on port ${port}`);
