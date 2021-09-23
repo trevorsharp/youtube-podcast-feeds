@@ -9,11 +9,11 @@ class RssService {
   static getRssFeed = (feedId: string) => {
     const cacheKey = `rss-${feedId}`;
     const cacheResult = cache.get(cacheKey);
-    if (cacheResult) {
-      return cacheResult;
-    }
+    if (cacheResult) return cacheResult;
 
     const feed = feedService.getFeedData(feedId);
+
+    if (!feed) return '';
 
     const rssFeed = new Podcast({
       title: feed.title,
