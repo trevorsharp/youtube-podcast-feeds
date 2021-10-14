@@ -1,6 +1,9 @@
 FROM node:14.16.0-alpine
 
-RUN apk add --no-cache yarn youtube-dl ffmpeg
+RUN apk add --no-cache yarn ffmpeg python3
+RUN set -x && \
+  wget https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -O /usr/bin/yt-dlp && \
+  chmod a+x /usr/bin/yt-dlp
 
 WORKDIR /app
 
@@ -14,6 +17,7 @@ COPY ./tsconfig.json ./tsconfig.json
 RUN yarn build
 
 ENV NODE_ENV=production
-CMD cp /app/config.json /app/config/production.json 2>/dev/null \
-  && pip3 install --upgrade youtube-dl &> /dev/null && node /app/build/index.js \
-  || echo 'Missing File (config.json) - See README For More Information'
+CMD cp /app/config.json /app/config/production.json 2>/dev/null && \
+  /usr/bin/yt-dlp -U && \
+  node /app/build/index.js || \
+  echo 'Missing File (config.json) - See README For More Information'

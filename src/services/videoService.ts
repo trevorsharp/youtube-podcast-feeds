@@ -26,7 +26,7 @@ class VideoService {
     const youtubeUrl = `http://www.youtube.com/watch?v=${videoId}`;
     try {
       const url = execSync(
-        `youtube-dl -g --format=${audioOnly ? 'bestaudio[ext=m4a]' : 'best[ext=mp4]'} ${
+        `yt-dlp -g --format=${audioOnly ? 'bestaudio[ext=m4a]' : 'best[ext=mp4]'} ${
           fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : ''
         } ${youtubeUrl}`
       ).toString();
@@ -69,7 +69,7 @@ class VideoService {
       fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
     );
 
-    const videoDownloadProcess = spawn('youtube-dl', [
+    const videoDownloadProcess = spawn('yt-dlp', [
       '-i',
       '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
       '--merge-output-format=mp4',
