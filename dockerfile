@@ -19,5 +19,6 @@ RUN yarn build
 ENV NODE_ENV=production
 CMD cp /app/config.json /app/config/production.json 2>/dev/null && \
   /usr/bin/yt-dlp -U && \
+  /usr/bin/yt-dlp --version && \
   node /app/build/index.js || \
   echo 'Missing File (config.json) - See README For More Information'
