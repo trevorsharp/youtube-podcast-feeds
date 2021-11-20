@@ -72,7 +72,8 @@ class YouTubeService {
                     date: videoDetails?.snippet?.publishedAt ?? '',
                     duration: moment.duration(videoDetails?.contentDetails?.duration).asSeconds(),
                   },
-                  videoDetails?.status?.uploadStatus === 'processed',
+                  videoDetails?.status?.uploadStatus === 'processed' &&
+                    videoDetails?.snippet?.liveBroadcastContent === 'none',
                 ];
               })
           ) ?? []
