@@ -21,5 +21,5 @@ export interface Video {
   title: string;
   date: string;
   description: string;
-  duration: number;
+  duration?: number;
 }

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Feed, FeedConfig } from '../types';
+import { Feed, FeedConfig, Video } from '../types';
 import youtubeService from './youtubeService';
 import videoService from './videoService';
 import rssService from './rssService';
@@ -13,7 +13,7 @@ class FeedUpdateService {
     const feeds = await Promise.all(
       config.feedConfigs.map(async (feed: FeedConfig) => {
         const videos = await FeedUpdateService.getVideosForFeedAsync(feed);
-        return FeedUpdateService.updateFeed({ ...feed, videos });
+        return await FeedUpdateService.updateFeed(feed, videos);
       })
     );
 
@@ -32,16 +32,38 @@ class FeedUpdateService {
       ...(feed.playlist ? await youtubeService.getVideosByPlaylistId(feed.playlist) : []),
     ].filter((video) => (feed.filter ? video.title.match(new RegExp(feed.filter, 'gi')) : true));
 
-  private static updateFeed = (feed: Feed) => {
-    FeedUpdateService.getFeedData(feed.id)?.videos.map(
-      (video) => !feed.videos.some((v) => v.id === video.id) && feed.videos.push(video)
+  private static updateFeed = async (
+    feedConfig: FeedConfig,
+    updatedVideos: Video[]
+  ): Promise<Feed> => {
+    const videos = FeedUpdateService.getFeedData(feedConfig.id)?.videos ?? [];
+
+    await Promise.all(
+      updatedVideos.map(async (video) => {
+        const existingIndex = videos.findIndex((v) => v.id === video.id);
+
+        if (existingIndex === -1) {
+          const [videoDetails, isProcessed] = await youtubeService.getVideoDetails(video.id);
+          if (isProcessed) videos.push(videoDetails);
+          return;
+        }
+
+        const duration = videos[existingIndex].duration;
+        videos[existingIndex] = {
+          ...video,
+          duration,
+        };
+      })
     );
 
-    const maxEpisodes = feed.maxEpisodes != undefined ? feed.maxEpisodes : config.maxEpisodes;
+    const maxEpisodes =
+      feedConfig.maxEpisodes != undefined ? feedConfig.maxEpisodes : config.maxEpisodes;
 
-    feed.videos
+    videos
       .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .splice(maxEpisodes === 0 ? feed.videos.length : maxEpisodes);
+      .splice(maxEpisodes === 0 ? videos.length : maxEpisodes);
+
+    const feed = { ...feedConfig, videos };
 
     FeedUpdateService.saveFeedData(feed);
 

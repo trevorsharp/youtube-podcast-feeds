@@ -34,7 +34,7 @@ class VideoService {
       cache.set(cacheKey, url, 3600);
 
       return { url };
-    } catch (error) {
+    } catch (error: any) {
       return { error: error.message };
     }
   };
