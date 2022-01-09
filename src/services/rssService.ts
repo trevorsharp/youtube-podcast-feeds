@@ -42,6 +42,8 @@ class RssService {
           ? { itunesEpisode: Number(RegExp.$1) }
           : {};
 
+      const itunesDuration = video.duration;
+
       rssFeed.addItem({
         title: title,
         itunesTitle: title,
@@ -49,7 +51,7 @@ class RssService {
         date: new Date(video.date),
         enclosure: { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' },
         url: `https://www.youtube.com/watch?v=${video.id}`,
-        itunesDuration: video.duration,
+        itunesDuration,
         ...episodeNumber,
       });
     });
