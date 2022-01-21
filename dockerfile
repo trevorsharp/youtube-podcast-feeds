@@ -16,6 +16,8 @@ COPY ./config ./config
 COPY ./tsconfig.json ./tsconfig.json
 RUN yarn build
 
+RUN touch availableToDownload
+
 ENV NODE_ENV=production
 CMD cp /app/config.json /app/config/production.json 2>/dev/null && \
   /usr/bin/yt-dlp -U && \

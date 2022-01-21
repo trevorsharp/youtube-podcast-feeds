@@ -19,9 +19,12 @@ class FeedUpdateService {
 
     feeds.forEach((feed) => rssService.clearCache(feed.id));
 
-    cleanupService.removeOldContent(feeds);
-    videoService.downloadNewContent(feeds, () => {
-      log(`Update Complete`);
+    videoService.downloadNewContent(feeds, (didDownload: Boolean) => {
+      if (didDownload) {
+        cleanupService.removeOldContent(feeds);
+      }
+
+      log(`Update Complete${didDownload ? '' : ' - Skipped Downloads (Already In Progress)'}`);
     });
   };
 

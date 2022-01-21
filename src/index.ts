@@ -1,3 +1,4 @@
+import fs from 'fs';
 import express from 'express';
 import feedService from './services/feedService';
 import rssService from './services/rssService';

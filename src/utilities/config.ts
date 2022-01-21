@@ -8,6 +8,7 @@ class Config {
   readonly feedDataFileName: string;
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
+  readonly availableToDownloadFile: string;
   readonly cookiesFilePath: string;
   readonly videoFileExtension: string;
   readonly hostname: string;
@@ -27,6 +28,7 @@ class Config {
     this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
+    this.availableToDownloadFile = `./availableToDownload`;
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')

@@ -16,8 +16,8 @@ class VideoService {
       ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.videoFileExtension}`)
       : false;
 
-  static getStreamUrl = (videoId: string, audioOnly: boolean = false): StreamUrl => {
-    const cacheKey = `${audioOnly ? 'audio' : 'video'}-url-${videoId}`;
+  static getStreamUrl = (videoId: string): StreamUrl => {
+    const cacheKey = `video-url-${videoId}`;
     const cacheResult = cache.get(cacheKey);
     if (cacheResult) {
       return { url: cacheResult as string };
@@ -26,7 +26,7 @@ class VideoService {
     const youtubeUrl = `http://www.youtube.com/watch?v=${videoId}`;
     try {
       const url = execSync(
-        `yt-dlp -g --format=${audioOnly ? 'bestaudio[ext=m4a]' : 'best[ext=mp4]'} ${
+        `yt-dlp -g --format=best[ext=mp4] ${
           fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : ''
         } ${youtubeUrl}`
       ).toString();
@@ -39,7 +39,7 @@ class VideoService {
     }
   };
 
-  static downloadNewContent = (feeds: Feed[], onComplete: () => void) => {
+  static downloadNewContent = (feeds: Feed[], onComplete: (didDownload: boolean) => void) => {
     const downloadList: string[] = [];
 
     if (!fs.existsSync(config.contentDirectory))
@@ -58,8 +58,10 @@ class VideoService {
       })
     );
 
-    if (downloadList.length === 0) {
-      onComplete();
+    const skipDownloads = !fs.existsSync(config.availableToDownloadFile);
+
+    if (downloadList.length === 0 || skipDownloads) {
+      onComplete(!skipDownloads);
       return;
     }
 
@@ -69,6 +71,7 @@ class VideoService {
       fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
     );
 
+    fs.unlinkSync(config.availableToDownloadFile);
     const videoDownloadProcess = spawn('yt-dlp', [
       '-i',
       '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
@@ -83,8 +86,8 @@ class VideoService {
     videoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
     videoDownloadProcess.on('close', (_) => {
       if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
-
-      onComplete();
+      fs.writeFileSync(config.availableToDownloadFile, '');
+      onComplete(true);
     });
   };
 }
