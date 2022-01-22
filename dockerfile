@@ -1,4 +1,4 @@
-FROM node:14.16.0-alpine
+FROM node:16-alpine
 
 RUN apk add --no-cache yarn ffmpeg python3
 RUN set -x && \
