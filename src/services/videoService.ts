@@ -48,7 +48,7 @@ class VideoService {
     feeds.forEach((feed) =>
       feed.videos.forEach((video) => {
         if (
-          (feed.highQualityVideo != undefined ? feed.highQualityVideo : config.highQualityVideo) &&
+          feed.highQualityVideo &&
           !fs
             .readdirSync(config.contentDirectory)
             .includes(`${video.id}${config.videoFileExtension}`)

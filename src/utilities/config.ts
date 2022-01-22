@@ -1,5 +1,5 @@
 import config from 'config';
-import { FeedConfig } from '../types';
+import { FeedConfig, RawFeedConfig } from '../types';
 
 class Config {
   private static instance: Config;
@@ -30,21 +30,26 @@ class Config {
     this.videoFileExtension = '.mp4';
     this.availableToDownloadFile = `./availableToDownload`;
 
+    this.timeZone = config.get('timeZone');
+    this.updateInterval = config.get('updateInterval');
+    this.maxResults = Math.floor(config.get('maxResults'));
+    this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
+    this.highQualityVideo = config.get('highQualityVideo');
+
     this.hostname = config.has('hostname')
       ? config.get('hostname')
       : this.validationError('Hostname', 'Missing');
     this.apiKey = config.has('apiKey')
       ? config.get('apiKey')
       : this.validationError('API Key', 'Missing');
-    this.feedConfigs = config.has('feeds')
-      ? config.get('feeds')
-      : this.validationError('Feeds', 'Missing');
 
-    this.timeZone = config.get('timeZone');
-    this.updateInterval = config.get('updateInterval');
-    this.maxResults = Math.floor(config.get('maxResults'));
-    this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
-    this.highQualityVideo = config.get('highQualityVideo');
+    this.feedConfigs = config.has('feeds')
+      ? config.get<RawFeedConfig[]>('feeds').map(feed => ({
+          ...feed, 
+          maxEpisodes: feed.maxEpisodes !== undefined ? feed.maxEpisodes : this.maxEpisodes,
+          highQualityVideo: feed.highQualityVideo !== undefined ? feed.highQualityVideo : this.highQualityVideo
+        }))
+      : this.validationError('Feeds', 'Missing');
 
     this.validate();
   }
@@ -112,7 +117,7 @@ class Config {
         this.validationError('Feed Playlist', feedConfig.playlist);
 
       if (
-        feedConfig.maxEpisodes !== undefined &&
+        feedConfig.maxEpisodes === undefined ||
         (isNaN(feedConfig.maxEpisodes) || feedConfig.maxEpisodes < 0)
       )
         this.validationError('Feed Max Episodes', feedConfig.maxEpisodes.toString());

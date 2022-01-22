@@ -58,13 +58,10 @@ class FeedUpdateService {
         };
       })
     );
-
-    const maxEpisodes =
-      feedConfig.maxEpisodes != undefined ? feedConfig.maxEpisodes : config.maxEpisodes;
-
+    
     videos
       .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .splice(maxEpisodes === 0 ? videos.length : maxEpisodes);
+      .splice(feedConfig.maxEpisodes === 0 ? videos.length : feedConfig.maxEpisodes);
 
     const feed = { ...feedConfig, videos };
 
