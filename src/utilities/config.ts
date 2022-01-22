@@ -19,6 +19,7 @@ class Config {
   readonly maxResults: number;
   readonly maxEpisodes: number;
   readonly highQualityVideo: boolean;
+  readonly maxQualityVideo: boolean;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -37,6 +38,7 @@ class Config {
     this.maxResults = Math.floor(config.get('maxResults'));
     this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
     this.highQualityVideo = config.get('highQualityVideo');
+    this.maxQualityVideo = config.get('highQualityVideo');
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')

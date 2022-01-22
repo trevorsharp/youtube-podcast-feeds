@@ -3,5 +3,6 @@
   "updateInterval": 2,
   "maxResults": 5,
   "maxEpisodes": 0,
-  "highQualityVideo": false
+  "highQualityVideo": false,
+  "maxQualityVideo": false
 }

@@ -75,7 +75,9 @@ class VideoService {
     fs.unlinkSync(config.availableToDownloadFile);
     const videoDownloadProcess = spawn('yt-dlp', [
       `-i`,
-      `--format=bestvideo[height>1080]+bestaudio/bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
+      `--format=${
+        config.maxQualityVideo ? 'bestvideo[height>1080]+bestaudio/' : ''
+      }bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
       `--merge-output-format=mkv`,
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
