@@ -26,7 +26,7 @@ class VideoService {
     const youtubeUrl = `http://www.youtube.com/watch?v=${videoId}`;
     try {
       const url = execSync(
-        `yt-dlp -g --format=best[ext=mp4] ${
+        `yt-dlp -g --format=best[vcodec^=avc1] ${
           fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : ''
         } ${youtubeUrl}`
       ).toString();
@@ -74,7 +74,7 @@ class VideoService {
     fs.unlinkSync(config.availableToDownloadFile);
     const videoDownloadProcess = spawn('yt-dlp', [
       '-i',
-      '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
+      `--format=bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
       '--merge-output-format=mp4',
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
