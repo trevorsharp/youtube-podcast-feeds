@@ -44,10 +44,11 @@ class Config {
       : this.validationError('API Key', 'Missing');
 
     this.feedConfigs = config.has('feeds')
-      ? config.get<RawFeedConfig[]>('feeds').map(feed => ({
-          ...feed, 
+      ? config.get<RawFeedConfig[]>('feeds').map((feed) => ({
+          ...feed,
           maxEpisodes: feed.maxEpisodes !== undefined ? feed.maxEpisodes : this.maxEpisodes,
-          highQualityVideo: feed.highQualityVideo !== undefined ? feed.highQualityVideo : this.highQualityVideo
+          highQualityVideo:
+            feed.highQualityVideo !== undefined ? feed.highQualityVideo : this.highQualityVideo,
         }))
       : this.validationError('Feeds', 'Missing');
 
@@ -118,7 +119,8 @@ class Config {
 
       if (
         feedConfig.maxEpisodes === undefined ||
-        (isNaN(feedConfig.maxEpisodes) || feedConfig.maxEpisodes < 0)
+        isNaN(feedConfig.maxEpisodes) ||
+        feedConfig.maxEpisodes < 0
       )
         this.validationError('Feed Max Episodes', feedConfig.maxEpisodes.toString());
 
