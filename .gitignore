@@ -16,6 +16,7 @@ data/
 docker-compose.yml
 config/development.json
 config/production.json
+config.json
 test/
 build/
 
