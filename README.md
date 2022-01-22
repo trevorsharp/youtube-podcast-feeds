@@ -4,7 +4,7 @@ Create podcast feeds from YouTube videos
 
 ## Features
 
-- Generate RSS feeds that can be added to podcast apps with support for video podcasts (e.g. Apple Podcasts)
+- Generate RSS feeds that can be added to podcast apps with support for video podcasts (e.g. Apple Podcasts or Pocket Casts)
 - Simple web server for serving RSS feed data and video files
 - Download YouTube videos from channels, users, or playlists for higher quality
 
