@@ -73,16 +73,17 @@ class VideoService {
 
     fs.unlinkSync(config.availableToDownloadFile);
     const videoDownloadProcess = spawn('yt-dlp', [
-      '-i',
-      `--format=bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
-      '--merge-output-format=mp4',
+      `-i`,
+      `--format=bestvideo[height>1080]+bestaudio/bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
+      `--merge-output-format=mkv`,
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
       fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
+      `--exec=${config.remuxerScriptPath}`,
     ]);
 
     videoDownloadProcess.stdout.on('data', (data) => log(data));
-    videoDownloadProcess.stderr.on('data', (data) => log(`Download Error: ${data}`));
+    videoDownloadProcess.stderr.on('data', (data) => log(data));
     videoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
     videoDownloadProcess.on('close', (_) => {
       if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);

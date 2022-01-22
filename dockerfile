@@ -7,6 +7,8 @@ RUN set -x && \
 
 WORKDIR /app
 
+COPY ./remuxer.sh ./remuxer.sh
+
 COPY ./package.json ./package.json
 COPY ./yarn.lock ./yarn.lock
 RUN yarn
@@ -17,6 +19,7 @@ COPY ./tsconfig.json ./tsconfig.json
 RUN yarn build
 
 RUN touch availableToDownload
+RUN chmod +x ./remuxer.sh
 
 ENV NODE_ENV=production
 CMD cp /app/config.json /app/config/production.json 2>/dev/null && \

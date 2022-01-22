@@ -9,6 +9,7 @@ class Config {
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
   readonly availableToDownloadFile: string;
+  readonly remuxerScriptPath: string;
   readonly cookiesFilePath: string;
   readonly videoFileExtension: string;
   readonly hostname: string;
@@ -29,6 +30,7 @@ class Config {
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
     this.availableToDownloadFile = `./availableToDownload`;
+    this.remuxerScriptPath = `./remuxer.sh`;
 
     this.timeZone = config.get('timeZone');
     this.updateInterval = config.get('updateInterval');
