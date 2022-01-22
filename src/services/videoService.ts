@@ -67,8 +67,9 @@ class VideoService {
 
     if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
 
-    downloadList.forEach((videoId) =>
-      fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
+    fs.writeFileSync(
+      config.downloadsFilePath,
+      downloadList.map((videoId) => `http://www.youtube.com/watch?v=${videoId}`).join('\n')
     );
 
     fs.unlinkSync(config.availableToDownloadFile);
@@ -79,7 +80,7 @@ class VideoService {
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
       fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
-      `--exec=${config.remuxerScriptPath}`,
+      `--exec=sh\ ${config.remuxerScriptPath}`,
     ]);
 
     videoDownloadProcess.stdout.on('data', (data) => log(data));

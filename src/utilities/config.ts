@@ -30,8 +30,7 @@ class Config {
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
     this.availableToDownloadFile = `./availableToDownload`;
-    this.remuxerScriptPath =
-      process.env.NODE_ENV === 'development' ? `./remuxer.sh` : `/app/remuxer.sh`;
+    this.remuxerScriptPath = `./remuxer.sh`;
 
     this.timeZone = config.get('timeZone');
     this.updateInterval = config.get('updateInterval');
