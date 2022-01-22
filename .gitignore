@@ -18,3 +18,5 @@ config/development.json
 config/production.json
 test/
 build/
+
+availableToDownload
