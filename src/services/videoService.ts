@@ -89,23 +89,29 @@ class VideoService {
     videoDownloadProcess.stderr.on('data', (data) => log(data));
     videoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
     videoDownloadProcess.on('close', (_) => {
-      const maxVideoDownloadProcess = spawn('yt-dlp', [
-        `-i`,
-        `--format=bestvideo[height>1080][vcodec^=vp9]+bestaudio[ext=m4a]`,
-        `--merge-output-format=mp4`,
-        `--output=${config.contentDirectory}/%(id)s.vp9.%(ext)s`,
-        `--batch-file=${config.downloadsFilePath}`,
-        fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
-      ]);
+      if (config.maxQualityVideo) {
+        const maxVideoDownloadProcess = spawn('yt-dlp', [
+          `-i`,
+          `--format=bestvideo[height>1080][vcodec^=vp9]+bestaudio[ext=m4a]`,
+          `--merge-output-format=mp4`,
+          `--output=${config.contentDirectory}/%(id)s.vp9.%(ext)s`,
+          `--batch-file=${config.downloadsFilePath}`,
+          fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
+        ]);
 
-      maxVideoDownloadProcess.stdout.on('data', (data) => log(data));
-      maxVideoDownloadProcess.stderr.on('data', (data) => log(data));
-      maxVideoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
-      maxVideoDownloadProcess.on('close', (_) => {
+        maxVideoDownloadProcess.stdout.on('data', (data) => log(data));
+        maxVideoDownloadProcess.stderr.on('data', (data) => log(data));
+        maxVideoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
+        maxVideoDownloadProcess.on('close', (_) => {
+          if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
+          fs.writeFileSync(config.availableToDownloadFile, '');
+          onComplete(true);
+        });
+      } else {
         if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
         fs.writeFileSync(config.availableToDownloadFile, '');
         onComplete(true);
-      });
+      }
     });
   };
 }
