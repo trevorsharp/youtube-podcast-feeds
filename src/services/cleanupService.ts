@@ -14,7 +14,9 @@ class CleanupService {
     videoFiles.forEach((file) => {
       if (
         !feeds.some((feed) =>
-          feed.videos.map((video) => video.id).includes(file.replace(config.videoFileExtension, ''))
+          feed.videos
+            .map((video) => video.id)
+            .includes(file.replace(config.videoFileExtension, '').replace('.vp9', ''))
         )
       ) {
         try {

@@ -11,9 +11,11 @@ interface StreamUrl {
 }
 
 class VideoService {
-  static isVideoDownloaded = (videoId: string): boolean =>
+  static isVideoDownloaded = (videoId: string, qualifier: string = ''): boolean =>
     fs.existsSync(config.contentDirectory)
-      ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.videoFileExtension}`)
+      ? fs
+          .readdirSync(config.contentDirectory)
+          .includes(`${videoId}${qualifier}${config.videoFileExtension}`)
       : false;
 
   static getStreamUrl = (videoId: string): StreamUrl => {
@@ -73,25 +75,37 @@ class VideoService {
     );
 
     fs.unlinkSync(config.availableToDownloadFile);
+
     const videoDownloadProcess = spawn('yt-dlp', [
       `-i`,
-      `--format=${
-        config.maxQualityVideo ? 'bestvideo[height>1080]+bestaudio/' : ''
-      }bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
-      `--merge-output-format=mkv`,
+      `--format=bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
+      `--merge-output-format=mp4`,
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
       fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
-      `--exec=sh\ ${config.remuxerScriptPath}`,
     ]);
 
     videoDownloadProcess.stdout.on('data', (data) => log(data));
     videoDownloadProcess.stderr.on('data', (data) => log(data));
     videoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
     videoDownloadProcess.on('close', (_) => {
-      if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
-      fs.writeFileSync(config.availableToDownloadFile, '');
-      onComplete(true);
+      const maxVideoDownloadProcess = spawn('yt-dlp', [
+        `-i`,
+        `--format=bestvideo[height>1080][vcodec^=vp9]+bestaudio[ext=m4a]`,
+        `--merge-output-format=mp4`,
+        `--output=${config.contentDirectory}/%(id)s.vp9.%(ext)s`,
+        `--batch-file=${config.downloadsFilePath}`,
+        fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
+      ]);
+
+      maxVideoDownloadProcess.stdout.on('data', (data) => log(data));
+      maxVideoDownloadProcess.stderr.on('data', (data) => log(data));
+      maxVideoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
+      maxVideoDownloadProcess.on('close', (_) => {
+        if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
+        fs.writeFileSync(config.availableToDownloadFile, '');
+        onComplete(true);
+      });
     });
   };
 }

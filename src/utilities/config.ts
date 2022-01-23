@@ -9,7 +9,6 @@ class Config {
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
   readonly availableToDownloadFile: string;
-  readonly remuxerScriptPath: string;
   readonly cookiesFilePath: string;
   readonly videoFileExtension: string;
   readonly hostname: string;
@@ -20,6 +19,7 @@ class Config {
   readonly maxEpisodes: number;
   readonly highQualityVideo: boolean;
   readonly maxQualityVideo: boolean;
+  readonly maxQualityUserAgent: string;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -31,14 +31,14 @@ class Config {
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
     this.availableToDownloadFile = `./availableToDownload`;
-    this.remuxerScriptPath = `./remuxer.sh`;
 
     this.timeZone = config.get('timeZone');
     this.updateInterval = config.get('updateInterval');
     this.maxResults = Math.floor(config.get('maxResults'));
     this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
     this.highQualityVideo = config.get('highQualityVideo');
-    this.maxQualityVideo = config.get('highQualityVideo');
+    this.maxQualityVideo = config.get('maxQualityVideo');
+    this.maxQualityUserAgent = config.get('maxQualityUserAgent');
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')
@@ -67,7 +67,7 @@ class Config {
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
 
   private validate = () => {
-    if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s\/]*$/))
+    if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s]*$/))
       this.validationError('Hostname', this.hostname);
 
     if (!this.apiKey.match(/^[a-z0-9_\-]+$/i) || this.apiKey.length < 30)
@@ -84,6 +84,9 @@ class Config {
 
     if (isNaN(this.maxEpisodes) || this.maxEpisodes < 0)
       this.validationError('Max Episodes', this.maxEpisodes.toString());
+
+    if (!this.isValidRegexString(this.maxQualityUserAgent))
+      this.validationError('Max Quality User Agent', this.maxQualityUserAgent);
 
     if (!this.feedConfigs || this.feedConfigs.length < 1)
       this.validationError('Feeds Config', 'Requires At Least One Feed');

@@ -4,5 +4,6 @@
   "maxResults": 5,
   "maxEpisodes": 0,
   "highQualityVideo": false,
-  "maxQualityVideo": false
+  "maxQualityVideo": false,
+  "maxQualityUserAgent": "^$"
 }

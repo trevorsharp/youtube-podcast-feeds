@@ -16,9 +16,6 @@ COPY ./config ./config
 COPY ./tsconfig.json ./tsconfig.json
 RUN yarn build
 
-COPY ./remuxer.sh ./remuxer.sh
-RUN chmod +x ./remuxer.sh
-
 RUN touch availableToDownload
 
 ENV NODE_ENV=production
