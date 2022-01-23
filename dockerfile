@@ -1,4 +1,4 @@
-FROM node:14.16.0-alpine
+FROM node:16-alpine
 
 RUN apk add --no-cache yarn ffmpeg python3
 RUN set -x && \
@@ -15,6 +15,8 @@ COPY ./src ./src
 COPY ./config ./config
 COPY ./tsconfig.json ./tsconfig.json
 RUN yarn build
+
+RUN touch availableToDownload
 
 ENV NODE_ENV=production
 CMD cp /app/config.json /app/config/production.json 2>/dev/null && \

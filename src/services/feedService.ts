@@ -19,9 +19,12 @@ class FeedUpdateService {
 
     feeds.forEach((feed) => rssService.clearCache(feed.id));
 
-    cleanupService.removeOldContent(feeds);
-    videoService.downloadNewContent(feeds, () => {
-      log(`Update Complete`);
+    videoService.downloadNewContent(feeds, (didDownload: Boolean) => {
+      if (didDownload) {
+        cleanupService.removeOldContent(feeds);
+      }
+
+      log(`Update Complete${didDownload ? '' : ' - Skipped Downloads (Already In Progress)'}`);
     });
   };
 
@@ -36,32 +39,31 @@ class FeedUpdateService {
     feedConfig: FeedConfig,
     updatedVideos: Video[]
   ): Promise<Feed> => {
-    const videos = FeedUpdateService.getFeedData(feedConfig.id)?.videos ?? [];
+    const existingVideos = FeedUpdateService.getFeedData(feedConfig.id)?.videos ?? [];
 
-    await Promise.all(
-      updatedVideos.map(async (video) => {
-        const existingIndex = videos.findIndex((v) => v.id === video.id);
+    const newVideos: Video[] = updatedVideos.map((video) => {
+      const existingVideo = existingVideos.find((v) => v.id === video.id);
+      return existingVideo ? { ...video, duration: existingVideo.duration } : video;
+    });
 
-        if (existingIndex === -1) {
-          const [videoDetails, isProcessed] = await youtubeService.getVideoDetails(video.id);
-          if (isProcessed) videos.push(videoDetails);
-          return;
-        }
-
-        const duration = videos[existingIndex].duration;
-        videos[existingIndex] = {
-          ...video,
-          duration,
-        };
-      })
+    const allVideos = newVideos.concat(
+      existingVideos.filter((video) => newVideos.find((v) => v.id === video.id) === undefined)
     );
 
-    const maxEpisodes =
-      feedConfig.maxEpisodes != undefined ? feedConfig.maxEpisodes : config.maxEpisodes;
+    const videos: Video[] = [];
 
-    videos
-      .sort((a, b) => (a.date < b.date ? 1 : -1))
-      .splice(maxEpisodes === 0 ? videos.length : maxEpisodes);
+    for (let i = 0; i < allVideos.length; i++) {
+      if (allVideos[i].duration !== undefined) {
+        videos.push(allVideos[i]);
+        continue;
+      }
+
+      const [videoDetails, isProcessed] = await youtubeService.getVideoDetails(allVideos[i].id);
+      if (isProcessed) videos.push(videoDetails);
+    }
+
+    videos.splice(feedConfig.maxEpisodes === 0 ? videos.length : feedConfig.maxEpisodes);
+    videos.sort((a, b) => (a.date < b.date ? 1 : -1));
 
     const feed = { ...feedConfig, videos };
 

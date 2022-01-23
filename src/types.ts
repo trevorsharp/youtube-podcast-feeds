@@ -1,4 +1,4 @@
-export interface FeedConfig {
+interface BaseFeedConfig {
   readonly id: string;
   readonly title: string;
   readonly channel: string | undefined;
@@ -8,8 +8,16 @@ export interface FeedConfig {
   readonly episodeNumbers: string | undefined;
   readonly titleCase: boolean | undefined;
   readonly cleanTitles: string[][] | undefined;
+}
+
+export interface RawFeedConfig extends BaseFeedConfig {
   readonly maxEpisodes: number | undefined;
   readonly highQualityVideo: boolean | undefined;
+}
+
+export interface FeedConfig extends BaseFeedConfig {
+  readonly maxEpisodes: number;
+  readonly highQualityVideo: boolean;
 }
 
 export interface Feed extends FeedConfig {

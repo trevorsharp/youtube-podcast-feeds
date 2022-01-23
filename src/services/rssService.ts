@@ -1,4 +1,4 @@
-import Podcast from 'podcast';
+import { Podcast } from 'podcast';
 import feedService from './feedService';
 import config from '../utilities/config';
 import cache from '../utilities/cache';

@@ -12,9 +12,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+.dockerignore
+
 data/
 docker-compose.yml
 config/development.json
 config/production.json
+config.json
 test/
 build/
+
+availableToDownload

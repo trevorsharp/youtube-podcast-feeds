@@ -1,5 +1,5 @@
 import config from 'config';
-import { FeedConfig } from '../types';
+import { FeedConfig, RawFeedConfig } from '../types';
 
 class Config {
   private static instance: Config;
@@ -8,6 +8,7 @@ class Config {
   readonly feedDataFileName: string;
   readonly coverArtFileName: string;
   readonly downloadsFilePath: string;
+  readonly availableToDownloadFile: string;
   readonly cookiesFilePath: string;
   readonly videoFileExtension: string;
   readonly hostname: string;
@@ -17,6 +18,8 @@ class Config {
   readonly maxResults: number;
   readonly maxEpisodes: number;
   readonly highQualityVideo: boolean;
+  readonly maxQualityVideo: boolean;
+  readonly maxQualityUserAgent: string;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -27,6 +30,15 @@ class Config {
     this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
+    this.availableToDownloadFile = `./availableToDownload`;
+
+    this.timeZone = config.get('timeZone');
+    this.updateInterval = config.get('updateInterval');
+    this.maxResults = Math.floor(config.get('maxResults'));
+    this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
+    this.highQualityVideo = config.get('highQualityVideo');
+    this.maxQualityVideo = config.get('maxQualityVideo');
+    this.maxQualityUserAgent = config.get('maxQualityUserAgent');
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')
@@ -34,15 +46,15 @@ class Config {
     this.apiKey = config.has('apiKey')
       ? config.get('apiKey')
       : this.validationError('API Key', 'Missing');
-    this.feedConfigs = config.has('feeds')
-      ? config.get('feeds')
-      : this.validationError('Feeds', 'Missing');
 
-    this.timeZone = config.get('timeZone');
-    this.updateInterval = config.get('updateInterval');
-    this.maxResults = Math.floor(config.get('maxResults'));
-    this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
-    this.highQualityVideo = config.get('highQualityVideo');
+    this.feedConfigs = config.has('feeds')
+      ? config.get<RawFeedConfig[]>('feeds').map((feed) => ({
+          ...feed,
+          maxEpisodes: feed.maxEpisodes !== undefined ? feed.maxEpisodes : this.maxEpisodes,
+          highQualityVideo:
+            feed.highQualityVideo !== undefined ? feed.highQualityVideo : this.highQualityVideo,
+        }))
+      : this.validationError('Feeds', 'Missing');
 
     this.validate();
   }
@@ -55,7 +67,7 @@ class Config {
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
 
   private validate = () => {
-    if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s\/]*$/))
+    if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s]*$/))
       this.validationError('Hostname', this.hostname);
 
     if (!this.apiKey.match(/^[a-z0-9_\-]+$/i) || this.apiKey.length < 30)
@@ -72,6 +84,9 @@ class Config {
 
     if (isNaN(this.maxEpisodes) || this.maxEpisodes < 0)
       this.validationError('Max Episodes', this.maxEpisodes.toString());
+
+    if (!this.isValidRegexString(this.maxQualityUserAgent))
+      this.validationError('Max Quality User Agent', this.maxQualityUserAgent);
 
     if (!this.feedConfigs || this.feedConfigs.length < 1)
       this.validationError('Feeds Config', 'Requires At Least One Feed');
@@ -110,8 +125,9 @@ class Config {
         this.validationError('Feed Playlist', feedConfig.playlist);
 
       if (
-        feedConfig.maxEpisodes !== undefined &&
-        (isNaN(feedConfig.maxEpisodes) || feedConfig.maxEpisodes < 0)
+        feedConfig.maxEpisodes === undefined ||
+        isNaN(feedConfig.maxEpisodes) ||
+        feedConfig.maxEpisodes < 0
       )
         this.validationError('Feed Max Episodes', feedConfig.maxEpisodes.toString());
 

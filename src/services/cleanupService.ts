@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { Feed } from '../types';
 import config from '../utilities/config';
+import log from '../utilities/log';
 
 class CleanupService {
   static removeOldContent = (feeds: Feed[]) => {
@@ -10,12 +11,21 @@ class CleanupService {
 
     const videoFiles = fs.readdirSync(config.contentDirectory);
 
-    videoFiles.map(
-      (file) =>
+    videoFiles.forEach((file) => {
+      if (
         !feeds.some((feed) =>
-          feed.videos.map((video) => video.id).includes(file.replace(config.videoFileExtension, ''))
-        ) && fs.unlinkSync(`${config.contentDirectory}/${file}`)
-    );
+          feed.videos
+            .map((video) => video.id)
+            .includes(file.replace(config.videoFileExtension, '').replace('.vp9', ''))
+        )
+      ) {
+        try {
+          fs.unlinkSync(`${config.contentDirectory}/${file}`);
+        } catch {
+          log('Failed to remove a file in the content directory');
+        }
+      }
+    });
   };
 }
 

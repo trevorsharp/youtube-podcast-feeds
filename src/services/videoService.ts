@@ -11,13 +11,15 @@ interface StreamUrl {
 }
 
 class VideoService {
-  static isVideoDownloaded = (videoId: string): boolean =>
+  static isVideoDownloaded = (videoId: string, qualifier: string = ''): boolean =>
     fs.existsSync(config.contentDirectory)
-      ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.videoFileExtension}`)
+      ? fs
+          .readdirSync(config.contentDirectory)
+          .includes(`${videoId}${qualifier}${config.videoFileExtension}`)
       : false;
 
-  static getStreamUrl = (videoId: string, audioOnly: boolean = false): StreamUrl => {
-    const cacheKey = `${audioOnly ? 'audio' : 'video'}-url-${videoId}`;
+  static getStreamUrl = (videoId: string): StreamUrl => {
+    const cacheKey = `video-url-${videoId}`;
     const cacheResult = cache.get(cacheKey);
     if (cacheResult) {
       return { url: cacheResult as string };
@@ -26,7 +28,7 @@ class VideoService {
     const youtubeUrl = `http://www.youtube.com/watch?v=${videoId}`;
     try {
       const url = execSync(
-        `yt-dlp -g --format=${audioOnly ? 'bestaudio[ext=m4a]' : 'best[ext=mp4]'} ${
+        `yt-dlp -g --format=best[vcodec^=avc1] ${
           fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : ''
         } ${youtubeUrl}`
       ).toString();
@@ -39,7 +41,7 @@ class VideoService {
     }
   };
 
-  static downloadNewContent = (feeds: Feed[], onComplete: () => void) => {
+  static downloadNewContent = (feeds: Feed[], onComplete: (didDownload: boolean) => void) => {
     const downloadList: string[] = [];
 
     if (!fs.existsSync(config.contentDirectory))
@@ -48,7 +50,7 @@ class VideoService {
     feeds.forEach((feed) =>
       feed.videos.forEach((video) => {
         if (
-          (feed.highQualityVideo != undefined ? feed.highQualityVideo : config.highQualityVideo) &&
+          feed.highQualityVideo &&
           !fs
             .readdirSync(config.contentDirectory)
             .includes(`${video.id}${config.videoFileExtension}`)
@@ -58,33 +60,58 @@ class VideoService {
       })
     );
 
-    if (downloadList.length === 0) {
-      onComplete();
+    const skipDownloads = !fs.existsSync(config.availableToDownloadFile);
+
+    if (downloadList.length === 0 || skipDownloads) {
+      onComplete(!skipDownloads);
       return;
     }
 
     if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
 
-    downloadList.forEach((videoId) =>
-      fs.appendFileSync(config.downloadsFilePath, `http://www.youtube.com/watch?v=${videoId}\n`)
+    fs.writeFileSync(
+      config.downloadsFilePath,
+      downloadList.map((videoId) => `http://www.youtube.com/watch?v=${videoId}`).join('\n')
     );
 
+    fs.unlinkSync(config.availableToDownloadFile);
+
     const videoDownloadProcess = spawn('yt-dlp', [
-      '-i',
-      '--format=bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio',
-      '--merge-output-format=mp4',
+      `-i`,
+      `--format=bestvideo[vcodec^=avc1]+bestaudio[ext=m4a]/best[vcodec^=avc1]`,
+      `--merge-output-format=mp4`,
       `--output=${config.contentDirectory}/%(id)s.%(ext)s`,
       `--batch-file=${config.downloadsFilePath}`,
       fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
     ]);
 
     videoDownloadProcess.stdout.on('data', (data) => log(data));
-    videoDownloadProcess.stderr.on('data', (data) => log(`Download Error: ${data}`));
+    videoDownloadProcess.stderr.on('data', (data) => log(data));
     videoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
     videoDownloadProcess.on('close', (_) => {
-      if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
+      if (config.maxQualityVideo) {
+        const maxVideoDownloadProcess = spawn('yt-dlp', [
+          `-i`,
+          `--format=bestvideo[height>1080][vcodec^=vp9]+bestaudio[ext=m4a]`,
+          `--merge-output-format=mp4`,
+          `--output=${config.contentDirectory}/%(id)s.vp9.%(ext)s`,
+          `--batch-file=${config.downloadsFilePath}`,
+          fs.existsSync(config.cookiesFilePath) ? `--cookies=${config.cookiesFilePath}` : '',
+        ]);
 
-      onComplete();
+        maxVideoDownloadProcess.stdout.on('data', (data) => log(data));
+        maxVideoDownloadProcess.stderr.on('data', (data) => log(data));
+        maxVideoDownloadProcess.on('error', (error) => log(`Download Error: ${error.message}`));
+        maxVideoDownloadProcess.on('close', (_) => {
+          if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
+          fs.writeFileSync(config.availableToDownloadFile, '');
+          onComplete(true);
+        });
+      } else {
+        if (fs.existsSync(config.downloadsFilePath)) fs.unlinkSync(config.downloadsFilePath);
+        fs.writeFileSync(config.availableToDownloadFile, '');
+        onComplete(true);
+      }
     });
   };
 }
