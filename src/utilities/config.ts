@@ -19,7 +19,6 @@ class Config {
   readonly maxEpisodes: number;
   readonly highQualityVideo: boolean;
   readonly maxQualityVideo: boolean;
-  readonly maxQualityUserAgent: string;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -27,7 +26,7 @@ class Config {
     this.contentDirectory = `${this.workingDirectory}/content`;
     this.feedDataFileName = 'feedData.json';
     this.coverArtFileName = 'cover.png';
-    this.downloadsFilePath = `${this.workingDirectory}/.download.txt`;
+    this.downloadsFilePath = `${this.contentDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
     this.availableToDownloadFile = `./availableToDownload`;
@@ -38,7 +37,6 @@ class Config {
     this.maxEpisodes = Math.floor(config.get('maxEpisodes'));
     this.highQualityVideo = config.get('highQualityVideo');
     this.maxQualityVideo = config.get('maxQualityVideo');
-    this.maxQualityUserAgent = config.get('maxQualityUserAgent');
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')
@@ -84,9 +82,6 @@ class Config {
 
     if (isNaN(this.maxEpisodes) || this.maxEpisodes < 0)
       this.validationError('Max Episodes', this.maxEpisodes.toString());
-
-    if (!this.isValidRegexString(this.maxQualityUserAgent))
-      this.validationError('Max Quality User Agent', this.maxQualityUserAgent);
 
     if (!this.feedConfigs || this.feedConfigs.length < 1)
       this.validationError('Feeds Config', 'Requires At Least One Feed');
