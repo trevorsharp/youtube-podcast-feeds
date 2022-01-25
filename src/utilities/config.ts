@@ -51,6 +51,7 @@ class Config {
           maxEpisodes: feed.maxEpisodes !== undefined ? feed.maxEpisodes : this.maxEpisodes,
           highQualityVideo:
             feed.highQualityVideo !== undefined ? feed.highQualityVideo : this.highQualityVideo,
+          sortByDateAdded: feed.sortByDateAdded ?? false,
         }))
       : this.validationError('Feeds', 'Missing');
 

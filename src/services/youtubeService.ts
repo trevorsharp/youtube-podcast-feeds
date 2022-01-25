@@ -1,7 +1,7 @@
 import { google, youtube_v3 } from 'googleapis';
 import * as moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
-import { Video } from '../types';
+import { Video, VideoItem } from '../types';
 import config from '../utilities/config';
 import log from '../utilities/log';
 import cache from '../utilities/cache';
@@ -20,7 +20,7 @@ class YouTubeService {
     return YouTubeService.instance;
   }
 
-  getVideosByUsername = async (username: string) => {
+  getVideosByUsername = async (username: string): Promise<VideoItem[]> => {
     const cacheKey = `plalist-id-for-username-${username}`;
 
     const playlistId =
@@ -42,7 +42,7 @@ class YouTubeService {
     return playlistId ? await this.getVideosByPlaylistId(playlistId) : [];
   };
 
-  getVideosByChannelId = async (channelId: string) => {
+  getVideosByChannelId = async (channelId: string): Promise<VideoItem[]> => {
     const cacheKey = `plalist-id-for-channel-${channelId}`;
 
     const playlistId =
@@ -64,7 +64,7 @@ class YouTubeService {
     return playlistId ? await this.getVideosByPlaylistId(playlistId) : [];
   };
 
-  getVideosByPlaylistId = async (playlistId: string) =>
+  getVideosByPlaylistId = async (playlistId: string): Promise<VideoItem[]> =>
     await this.youtube.playlistItems
       .list({
         part: ['snippet,contentDetails'],
@@ -78,6 +78,7 @@ class YouTubeService {
             title: item?.snippet?.title ?? '',
             description: item?.snippet?.description ?? '',
             date: item?.contentDetails?.videoPublishedAt ?? '',
+            dateAdded: item?.snippet?.publishedAt ?? '',
           })) ?? []
       )
       .catch(() => {
@@ -85,7 +86,7 @@ class YouTubeService {
         process.exit();
       });
 
-  getVideoDetails = async (videoId: string) =>
+  getVideoDetails = async (videoId: string): Promise<[Video, boolean]> =>
     await this.youtube.videos
       .list({
         part: ['snippet,contentDetails,status'],

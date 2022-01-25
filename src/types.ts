@@ -13,11 +13,13 @@ interface BaseFeedConfig {
 export interface RawFeedConfig extends BaseFeedConfig {
   readonly maxEpisodes: number | undefined;
   readonly highQualityVideo: boolean | undefined;
+  readonly sortByDateAdded: boolean | undefined;
 }
 
 export interface FeedConfig extends BaseFeedConfig {
   readonly maxEpisodes: number;
   readonly highQualityVideo: boolean;
+  readonly sortByDateAdded: boolean;
 }
 
 export interface Feed extends FeedConfig {
@@ -30,4 +32,8 @@ export interface Video {
   date: string;
   description: string;
   duration?: number;
+}
+
+export interface VideoItem extends Video {
+  dateAdded: string;
 }

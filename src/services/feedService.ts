@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Feed, FeedConfig, Video } from '../types';
+import { Feed, FeedConfig, VideoItem, Video } from '../types';
 import youtubeService from './youtubeService';
 import videoService from './videoService';
 import rssService from './rssService';
@@ -37,17 +37,19 @@ class FeedUpdateService {
 
   private static updateFeed = async (
     feedConfig: FeedConfig,
-    updatedVideos: Video[]
+    updatedVideos: VideoItem[]
   ): Promise<Feed> => {
     const existingVideos = FeedUpdateService.getFeedData(feedConfig.id)?.videos ?? [];
 
-    const newVideos: Video[] = updatedVideos.map((video) => {
+    const newVideos = updatedVideos.map((video) => {
       const existingVideo = existingVideos.find((v) => v.id === video.id);
       return existingVideo ? { ...video, duration: existingVideo.duration } : video;
     });
 
     const allVideos = newVideos.concat(
-      existingVideos.filter((video) => newVideos.find((v) => v.id === video.id) === undefined)
+      existingVideos
+        .filter((video) => newVideos.find((v) => v.id === video.id) === undefined)
+        .map((i) => ({ ...i, dateAdded: i.date }))
     );
 
     const videos: Video[] = [];
@@ -59,7 +61,12 @@ class FeedUpdateService {
       }
 
       const [videoDetails, isProcessed] = await youtubeService.getVideoDetails(allVideos[i].id);
-      if (isProcessed) videos.push(videoDetails);
+      if (isProcessed)
+        videos.push(
+          feedConfig.sortByDateAdded
+            ? { ...videoDetails, date: allVideos[i].dateAdded }
+            : videoDetails
+        );
     }
 
     videos.splice(feedConfig.maxEpisodes === 0 ? videos.length : feedConfig.maxEpisodes);
