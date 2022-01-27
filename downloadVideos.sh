@@ -38,7 +38,7 @@ while read videoId; do
             -i "$directory/$videoId.mkv" \
             -c:v libx264 \
             -c:a copy \
-            -preset faster \
+            -preset ultrafast \
             -r 30 \
             -start_number 0 \
             -hls_time 10 \
