@@ -18,8 +18,7 @@ class CleanupService {
         )
       ) {
         try {
-          log(`DELETING: ${config.contentDirectory}/${file}`);
-          // fs.unlinkSync(`${config.contentDirectory}/${file}`);
+          fs.unlinkSync(`${config.contentDirectory}/${file}`);
         } catch {
           log('Failed to remove a file in the content directory');
         }
