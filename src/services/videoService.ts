@@ -11,10 +11,16 @@ interface StreamUrl {
 }
 
 class VideoService {
-  static isVideoDownloaded = (videoId: string): boolean =>
-    fs.existsSync(config.contentDirectory)
-      ? fs.readdirSync(config.contentDirectory).includes(`${videoId}${config.videoFileExtension}`)
-      : false;
+  static getVideoFile = (videoId: string): string | undefined => {
+    const videoFilePath = `${config.contentDirectory}/${videoId}${config.videoFileExtension}`;
+    const maxVideoFilePath = `${config.contentDirectory}/${videoId}${config.maxVideoFileExtension}`;
+
+    return fs.existsSync(videoFilePath)
+      ? videoFilePath
+      : fs.existsSync(maxVideoFilePath)
+      ? maxVideoFilePath
+      : undefined;
+  };
 
   static getStreamUrl = (videoId: string): StreamUrl => {
     const cacheKey = `video-url-${videoId}`;
@@ -49,9 +55,8 @@ class VideoService {
       feed.videos.forEach((video) => {
         if (
           feed.highQualityVideo &&
-          !fs
-            .readdirSync(config.contentDirectory)
-            .includes(`${video.id}${config.videoFileExtension}`)
+          !fs.existsSync(`${config.contentDirectory}/${video.id}${config.videoFileExtension}`) &&
+          !fs.existsSync(`${config.contentDirectory}/${video.id}${config.maxVideoFileExtension}`)
         ) {
           downloadList.push(video.id);
         }

@@ -16,15 +16,40 @@ while read videoId; do
     fi
 
     if [ "$highQualityVideoUrl" == "" ]; then
-        yt-dlp -f "bv[vcodec^=avc1]+ba[ext=m4a]" --merge-output-format=mp4 -o "$directory/%(id)s.temp.%(ext)s" ${cookieFile:+--cookies $cookieFile} "$youtubeBaseUrl$videoId" &
-    else
-        yt-dlp -f "bv[vcodec^=vp9]+ba[ext=m4a]" --merge-output-format=mkv -o "$directory/%(id)s.temp.%(ext)s" ${cookieFile:+--cookies $cookieFile} "$youtubeBaseUrl$videoId" &
+        yt-dlp \
+            -f "bv[vcodec^=avc1]+ba[ext=m4a]" \
+            --merge-output-format=mp4 \
+            -o "$directory/%(id)s.%(ext)s" \
+            ${cookieFile:+--cookies $cookieFile} \
+            "$youtubeBaseUrl$videoId" &
         wait
-        ffmpeg -i "$directory/$videoId.temp.mkv" -c:v libx264 -c:a copy -threads 0 -preset ultrafast -r 30 $directory/$videoId.temp.mp4 < /dev/null &
-    fi
+    else
+        yt-dlp \
+            -f "bv[vcodec^=vp9]+ba[ext=m4a]" \
+            --merge-output-format=mkv \
+            -o "$directory/%(id)s.%(ext)s" \
+            ${cookieFile:+--cookies $cookieFile} \
+            "$youtubeBaseUrl$videoId" &
+        wait
 
-    wait
-    mv $directory/$videoId.temp.mp4 $directory/$videoId.mp4
-    rm $directory/$videoId.temp.mkv 2> /dev/null
+        mkdir $directory/$videoId
+
+        ffmpeg \
+            -i "$directory/$videoId.mkv" \
+            -c:v libx264 \
+            -c:a copy \
+            -preset faster \
+            -r 30 ffmpeg \
+            -start_number 0 \
+            -hls_time 10 \
+            -hls_list_size 0 \
+            -f hls \
+            -hls_segment_filename "$directory/$videoId/%d.ts" \
+            $directory/$videoId/index.temp.m3u8 < /dev/null &
+        wait 
+        
+        mv $directory/$videoId/index.temp.m3u8 $directory/$videoId/index.m3u8
+        rm $directory/$videoId.mkv
+    fi
 
 done <$downloadList

@@ -14,13 +14,12 @@ class CleanupService {
     videoFiles.forEach((file) => {
       if (
         !feeds.some((feed) =>
-          feed.videos
-            .map((video) => video.id)
-            .includes(file.replace(config.videoFileExtension, '').replace('.vp9', ''))
+          feed.videos.map((video) => video.id).includes(file.replace(config.videoFileExtension, ''))
         )
       ) {
         try {
-          fs.unlinkSync(`${config.contentDirectory}/${file}`);
+          log(`DELETING: ${config.contentDirectory}/${file}`);
+          // fs.unlinkSync(`${config.contentDirectory}/${file}`);
         } catch {
           log('Failed to remove a file in the content directory');
         }

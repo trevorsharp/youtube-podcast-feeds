@@ -11,6 +11,7 @@ class Config {
   readonly availableToDownloadFile: string;
   readonly cookiesFilePath: string;
   readonly videoFileExtension: string;
+  readonly maxVideoFileExtension: string;
   readonly hostname: string;
   readonly apiKey: string;
   readonly timeZone: string;
@@ -29,6 +30,7 @@ class Config {
     this.downloadsFilePath = `${this.contentDirectory}/.download.txt`;
     this.cookiesFilePath = './cookies.txt';
     this.videoFileExtension = '.mp4';
+    this.maxVideoFileExtension = '/index.m3u8';
     this.availableToDownloadFile = `./availableToDownload`;
 
     this.timeZone = config.get('timeZone');
