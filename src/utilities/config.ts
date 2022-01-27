@@ -66,6 +66,8 @@ class Config {
   }
 
   public getFeedDirectory = (feedId: string): string => `${this.workingDirectory}/${feedId}`;
+  public getVideoUrlPath = (filePath: string): string =>
+    filePath.replace(this.workingDirectory, '');
 
   private validate = () => {
     if (!this.hostname.match(/^https?:\/\/[^\s$.?#].[^\s]*$/))

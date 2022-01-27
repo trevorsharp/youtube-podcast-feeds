@@ -12,9 +12,9 @@ app.use('/content', express.static(`${config.contentDirectory}/`));
 app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 
 app.get('/video/:videoId', async (req, res) => {
-  const downloadedVideoFile = videoService.getVideoFile(req.params.videoId);
-  if (downloadedVideoFile) {
-    return res.redirect(302, downloadedVideoFile);
+  const downloadedVideoUrlPath = videoService.getVideoUrlPath(req.params.videoId);
+  if (downloadedVideoUrlPath) {
+    return res.redirect(302, downloadedVideoUrlPath);
   }
 
   const result = videoService.getStreamUrl(req.params.videoId);

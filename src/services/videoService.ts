@@ -11,14 +11,14 @@ interface StreamUrl {
 }
 
 class VideoService {
-  static getVideoFile = (videoId: string): string | undefined => {
+  static getVideoUrlPath = (videoId: string): string | undefined => {
     const videoFilePath = `${config.contentDirectory}/${videoId}${config.videoFileExtension}`;
     const maxVideoFilePath = `${config.contentDirectory}/${videoId}${config.maxVideoFileExtension}`;
 
     return fs.existsSync(videoFilePath)
-      ? videoFilePath
+      ? config.getVideoUrlPath(videoFilePath)
       : fs.existsSync(maxVideoFilePath)
-      ? maxVideoFilePath
+      ? config.getVideoUrlPath(maxVideoFilePath)
       : undefined;
   };
 
