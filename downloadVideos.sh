@@ -39,7 +39,7 @@ while read videoId; do
             -c:v libx264 \
             -c:a copy \
             -preset faster \
-            -r 30 ffmpeg \
+            -r 30 \
             -start_number 0 \
             -hls_time 10 \
             -hls_list_size 0 \
