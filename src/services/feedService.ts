@@ -56,7 +56,8 @@ class FeedUpdateService {
 
     for (let i = 0; i < allVideos.length; i++) {
       if (allVideos[i].duration !== undefined) {
-        videos.push(allVideos[i]);
+        const { dateAdded, ...rest } = allVideos[i];
+        videos.push(rest);
         continue;
       }
 
