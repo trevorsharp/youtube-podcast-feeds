@@ -56,18 +56,16 @@ class FeedUpdateService {
 
     for (let i = 0; i < allVideos.length; i++) {
       if (allVideos[i].duration !== undefined) {
-        const { dateAdded, ...rest } = allVideos[i];
-        videos.push(rest);
+        const { date, dateAdded, ...rest } = allVideos[i];
+        videos.push({ ...rest, date: feedConfig.sortByDateAdded ? dateAdded : date });
         continue;
       }
 
       const [videoDetails, isProcessed] = await youtubeService.getVideoDetails(allVideos[i].id);
-      if (isProcessed)
-        videos.push(
-          feedConfig.sortByDateAdded
-            ? { ...videoDetails, date: allVideos[i].dateAdded }
-            : videoDetails
-        );
+      if (isProcessed) {
+        const { date, ...rest } = videoDetails;
+        videos.push({ ...rest, date: feedConfig.sortByDateAdded ? allVideos[i].dateAdded : date });
+      }
     }
 
     videos.splice(feedConfig.maxEpisodes === 0 ? videos.length : feedConfig.maxEpisodes);
