@@ -20,7 +20,7 @@ class CleanupService {
         try {
           fs.unlinkSync(`${config.contentDirectory}/${file}`);
         } catch {
-          log('Failed to remove a file in the content directory');
+          log(`Failed to remove a file in the content directory - ${file}`);
         }
       }
     });
