@@ -21,7 +21,7 @@ class YouTubeService {
   }
 
   getVideosByUsername = async (username: string): Promise<VideoItem[]> => {
-    const cacheKey = `plalist-id-for-username-${username}`;
+    const cacheKey = `playlist-id-for-username-${username}`;
 
     const playlistId =
       cache.get(cacheKey) ??
@@ -29,8 +29,8 @@ class YouTubeService {
         .list({ part: ['contentDetails'], forUsername: username })
         .then(
           (response) => response?.data?.items?.shift()?.contentDetails?.relatedPlaylists?.uploads,
-          () => {
-            log(`Could not find YouTube username (${username})`);
+          (error) => {
+            log(`Could not find YouTube username (${username}) - ${error}`);
             process.exit();
           }
         )
@@ -43,7 +43,7 @@ class YouTubeService {
   };
 
   getVideosByChannelId = async (channelId: string): Promise<VideoItem[]> => {
-    const cacheKey = `plalist-id-for-channel-${channelId}`;
+    const cacheKey = `playlist-id-for-channel-${channelId}`;
 
     const playlistId =
       cache.get(cacheKey) ??
@@ -51,8 +51,8 @@ class YouTubeService {
         .list({ part: ['contentDetails'], id: [channelId] })
         .then(
           (response) => response?.data?.items?.shift()?.contentDetails?.relatedPlaylists?.uploads,
-          () => {
-            log(`Could not find YouTube channel (${channelId})`);
+          (error) => {
+            log(`Could not find YouTube channel (${channelId}) - ${error}`);
             process.exit();
           }
         )
@@ -81,8 +81,8 @@ class YouTubeService {
             dateAdded: item?.snippet?.publishedAt ?? '',
           })) ?? []
       )
-      .catch(() => {
-        log(`Could not find YouTube playlist (${playlistId})`);
+      .catch((error) => {
+        log(`Could not find YouTube playlist (${playlistId}) - ${error}`);
         process.exit();
       });
 
