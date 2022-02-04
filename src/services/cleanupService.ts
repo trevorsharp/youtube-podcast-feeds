@@ -18,7 +18,7 @@ class CleanupService {
         )
       ) {
         try {
-          fs.unlinkSync(`${config.contentDirectory}/${file}`);
+          fs.rmSync(`${config.contentDirectory}/${file}`, { recursive: true, force: true });
         } catch {
           log(`Failed to remove a file in the content directory - ${file}`);
         }
