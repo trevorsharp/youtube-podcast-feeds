@@ -12,15 +12,9 @@ app.use('/content', express.static(`${config.contentDirectory}/`));
 app.use('/content/covers', express.static(`${config.workingDirectory}/`));
 
 app.get('/video/:videoId', async (req, res) => {
-  if (
-    videoService.isVideoDownloaded(req.params.videoId, '.vp9') &&
-    (req.headers['user-agent']?.match(new RegExp(config.maxQualityUserAgent, 'gi')) ?? false)
-  ) {
-    return res.redirect(302, `/content/${req.params.videoId}.vp9${config.videoFileExtension}`);
-  }
-
-  if (videoService.isVideoDownloaded(req.params.videoId)) {
-    return res.redirect(302, `/content/${req.params.videoId}${config.videoFileExtension}`);
+  const downloadedVideoUrlPath = videoService.getVideoUrlPath(req.params.videoId);
+  if (downloadedVideoUrlPath) {
+    return res.redirect(302, downloadedVideoUrlPath);
   }
 
   const result = videoService.getStreamUrl(req.params.videoId);

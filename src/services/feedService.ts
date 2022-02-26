@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { Feed, FeedConfig, Video } from '../types';
+import { Feed, FeedConfig, VideoItem, Video } from '../types';
 import youtubeService from './youtubeService';
 import videoService from './videoService';
 import rssService from './rssService';
@@ -37,29 +37,35 @@ class FeedUpdateService {
 
   private static updateFeed = async (
     feedConfig: FeedConfig,
-    updatedVideos: Video[]
+    updatedVideos: VideoItem[]
   ): Promise<Feed> => {
     const existingVideos = FeedUpdateService.getFeedData(feedConfig.id)?.videos ?? [];
 
-    const newVideos: Video[] = updatedVideos.map((video) => {
+    const newVideos = updatedVideos.map((video) => {
       const existingVideo = existingVideos.find((v) => v.id === video.id);
       return existingVideo ? { ...video, duration: existingVideo.duration } : video;
     });
 
     const allVideos = newVideos.concat(
-      existingVideos.filter((video) => newVideos.find((v) => v.id === video.id) === undefined)
+      existingVideos
+        .filter((video) => newVideos.find((v) => v.id === video.id) === undefined)
+        .map((i) => ({ ...i, dateAdded: i.date }))
     );
 
     const videos: Video[] = [];
 
     for (let i = 0; i < allVideos.length; i++) {
       if (allVideos[i].duration !== undefined) {
-        videos.push(allVideos[i]);
+        const { date, dateAdded, ...rest } = allVideos[i];
+        videos.push({ ...rest, date: feedConfig.sortByDateAdded ? dateAdded : date });
         continue;
       }
 
       const [videoDetails, isProcessed] = await youtubeService.getVideoDetails(allVideos[i].id);
-      if (isProcessed) videos.push(videoDetails);
+      if (isProcessed) {
+        const { date, ...rest } = videoDetails;
+        videos.push({ ...rest, date: feedConfig.sortByDateAdded ? allVideos[i].dateAdded : date });
+      }
     }
 
     videos.splice(feedConfig.maxEpisodes === 0 ? videos.length : feedConfig.maxEpisodes);

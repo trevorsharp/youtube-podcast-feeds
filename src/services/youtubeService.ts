@@ -1,7 +1,7 @@
 import { google, youtube_v3 } from 'googleapis';
 import * as moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
-import { Video } from '../types';
+import { Video, VideoItem } from '../types';
 import config from '../utilities/config';
 import log from '../utilities/log';
 import cache from '../utilities/cache';
@@ -20,8 +20,8 @@ class YouTubeService {
     return YouTubeService.instance;
   }
 
-  getVideosByUsername = async (username: string) => {
-    const cacheKey = `plalist-id-for-username-${username}`;
+  getVideosByUsername = async (username: string): Promise<VideoItem[]> => {
+    const cacheKey = `playlist-id-for-username-${username}`;
 
     const playlistId =
       cache.get(cacheKey) ??
@@ -29,8 +29,8 @@ class YouTubeService {
         .list({ part: ['contentDetails'], forUsername: username })
         .then(
           (response) => response?.data?.items?.shift()?.contentDetails?.relatedPlaylists?.uploads,
-          () => {
-            log(`Could not find YouTube username (${username})`);
+          (error) => {
+            log(`Could not find YouTube username (${username}) - ${error}`);
             process.exit();
           }
         )
@@ -42,8 +42,8 @@ class YouTubeService {
     return playlistId ? await this.getVideosByPlaylistId(playlistId) : [];
   };
 
-  getVideosByChannelId = async (channelId: string) => {
-    const cacheKey = `plalist-id-for-channel-${channelId}`;
+  getVideosByChannelId = async (channelId: string): Promise<VideoItem[]> => {
+    const cacheKey = `playlist-id-for-channel-${channelId}`;
 
     const playlistId =
       cache.get(cacheKey) ??
@@ -51,8 +51,8 @@ class YouTubeService {
         .list({ part: ['contentDetails'], id: [channelId] })
         .then(
           (response) => response?.data?.items?.shift()?.contentDetails?.relatedPlaylists?.uploads,
-          () => {
-            log(`Could not find YouTube channel (${channelId})`);
+          (error) => {
+            log(`Could not find YouTube channel (${channelId}) - ${error}`);
             process.exit();
           }
         )
@@ -64,7 +64,7 @@ class YouTubeService {
     return playlistId ? await this.getVideosByPlaylistId(playlistId) : [];
   };
 
-  getVideosByPlaylistId = async (playlistId: string) =>
+  getVideosByPlaylistId = async (playlistId: string): Promise<VideoItem[]> =>
     await this.youtube.playlistItems
       .list({
         part: ['snippet,contentDetails'],
@@ -78,14 +78,15 @@ class YouTubeService {
             title: item?.snippet?.title ?? '',
             description: item?.snippet?.description ?? '',
             date: item?.contentDetails?.videoPublishedAt ?? '',
+            dateAdded: item?.snippet?.publishedAt ?? '',
           })) ?? []
       )
-      .catch(() => {
-        log(`Could not find YouTube playlist (${playlistId})`);
+      .catch((error) => {
+        log(`Could not find YouTube playlist (${playlistId}) - ${error}`);
         process.exit();
       });
 
-  getVideoDetails = async (videoId: string) =>
+  getVideoDetails = async (videoId: string): Promise<[Video, boolean]> =>
     await this.youtube.videos
       .list({
         part: ['snippet,contentDetails,status'],
@@ -101,7 +102,8 @@ class YouTubeService {
             date: videoDetails?.snippet?.publishedAt ?? '',
             duration: moment.duration(videoDetails?.contentDetails?.duration).asSeconds(),
           },
-          videoDetails?.status?.uploadStatus === 'processed',
+          videoDetails?.status?.uploadStatus === 'processed' &&
+            videoDetails?.snippet?.liveBroadcastContent === 'none',
         ];
       });
 
