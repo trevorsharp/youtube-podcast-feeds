@@ -47,10 +47,10 @@ class RssService {
       rssFeed.addItem({
         title: title,
         itunesTitle: title,
-        description: `${video.description}\n\nhttps://www.youtube.com/watch?v=${video.id}`.trim(),
+        description: `${video.description}\n\nhttps://youtu.be/${video.id}`.trim(),
         date: new Date(video.date),
         enclosure: { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' },
-        url: `https://www.youtube.com/watch?v=${video.id}`,
+        url: `https://youtu.be/${video.id}`,
         itunesDuration,
         ...episodeNumber,
       });
