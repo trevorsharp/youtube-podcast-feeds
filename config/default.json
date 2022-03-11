@@ -5,5 +5,5 @@
   "maxEpisodes": 0,
   "highQualityVideo": false,
   "maxQualityVideo": false,
-  "maxQualityUserAgent": "^$"
+  "addVideoLinksToDescription": false
 }

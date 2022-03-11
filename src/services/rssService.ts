@@ -42,15 +42,22 @@ class RssService {
           ? { itunesEpisode: Number(RegExp.$1) }
           : {};
 
+      const youtubeUrl = `https://youtu.be/${video.id}`;
+      const videoUrl = `${config.hostname}/video/${video.id}`;
+
+      const description = `${video.description}${
+        config.addVideoLinksToDescription ? `\n\n${youtubeUrl}\n${videoUrl}` : ''
+      }`.trim();
+
       const itunesDuration = video.duration;
 
       rssFeed.addItem({
         title: title,
         itunesTitle: title,
-        description: `${video.description}\n\nhttps://youtu.be/${video.id}`.trim(),
+        description,
         date: new Date(video.date),
-        enclosure: { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' },
-        url: `https://youtu.be/${video.id}`,
+        enclosure: { url: videoUrl, type: 'video/mp4' },
+        url: youtubeUrl,
         itunesDuration,
         ...episodeNumber,
       });
