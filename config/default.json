@@ -5,5 +5,6 @@
   "maxEpisodes": 0,
   "highQualityVideo": false,
   "maxQualityVideo": false,
+  "maxVideoHeight": 2160,
   "addVideoLinksToDescription": false
 }
