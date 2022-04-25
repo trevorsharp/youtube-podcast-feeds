@@ -45,9 +45,7 @@ class RssService {
       const youtubeUrl = `https://youtu.be/${video.id}`;
       const videoUrl = `${config.hostname}/video/${video.id}`;
 
-      const description = `${video.description}${
-        config.addVideoLinksToDescription ? `\n\n${youtubeUrl}\n${videoUrl}` : ''
-      }`.trim();
+      const description = `${video.description.trim()}\n\n${youtubeUrl}`;
 
       const itunesDuration = video.duration;
 

@@ -21,7 +21,6 @@ class Config {
   readonly highQualityVideo: boolean;
   readonly maxQualityVideo: boolean;
   readonly maxVideoHeight: number;
-  readonly addVideoLinksToDescription: boolean;
   readonly feedConfigs: FeedConfig[];
 
   private constructor() {
@@ -42,7 +41,6 @@ class Config {
     this.highQualityVideo = config.get('highQualityVideo');
     this.maxQualityVideo = config.get('maxQualityVideo');
     this.maxVideoHeight = config.get('maxVideoHeight');
-    this.addVideoLinksToDescription = config.get('addVideoLinksToDescription');
 
     this.hostname = config.has('hostname')
       ? config.get('hostname')
