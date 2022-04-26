@@ -3,7 +3,8 @@
 downloadList=$1
 directory=$(dirname $1)
 maximumQuality=$2
-cookieFile=$3
+maxHeight=$3
+cookieFile=$4
 
 youtubeBaseUrl="https://youtube.com/watch?v="
 
@@ -12,7 +13,7 @@ while read videoId; do
     if [ "$maximumQuality" != "true" ]; then
         highQualityVideoUrl=""
     else
-        highQualityVideoUrl=$(yt-dlp -g -f "bv[height>1080][vcodec^=vp9]" ${cookieFile:+--cookies $cookieFile} "$youtubeBaseUrl$videoId" 2>/dev/null)
+        highQualityVideoUrl=$(yt-dlp -g -f "bv[height>1080][height<=${maxHeight}][vcodec^=vp9]" ${cookieFile:+--cookies $cookieFile} "$youtubeBaseUrl$videoId" 2>/dev/null)
     fi
 
     if [ "$highQualityVideoUrl" == "" ]; then
@@ -25,7 +26,7 @@ while read videoId; do
         wait
     else
         yt-dlp \
-            -f "bv[vcodec^=vp9]+ba[ext=m4a]" \
+            -f "bv[vcodec^=vp9][height<=${maxHeight}]+ba[ext=m4a]" \
             --merge-output-format=mkv \
             -o "$directory/%(id)s.%(ext)s" \
             ${cookieFile:+--cookies $cookieFile} \
@@ -38,7 +39,7 @@ while read videoId; do
             -i "$directory/$videoId.mkv" \
             -c:v libx264 \
             -c:a copy \
-            -preset ultrafast \
+            -preset veryfast \
             -r 30 \
             -start_number 0 \
             -hls_time 10 \

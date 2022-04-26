@@ -151,3 +151,12 @@ _Example:_ `"Ep ([0-9]+)"` would be used to extract the episode number (`123`) f
 The string replacement (second element of the sub-array) can use the RegExp.$1-$9 properties (see [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/n) for more info on how these are used). Common separators (`-` and `|`) are cleaned up automatically.
 
 _Example:_ `[["Podcast Name", ""], ["Ep ([0-9]+)", "#$1"]]` will transform `Podcast Episode Title | Podcast Name | Ep 123` into `Podcast Episode Title | #123`.
+
+## Experimental Features
+
+These features are experimental, and they may reduce compatibility, increase resource usage, and cause problems. Proceed with caution.
+
+#### Additional Parameters
+
+- **maxQualityVideo** - If true, video quality downloads will be allowed to exceed 1080p. Must be used in conjunction with `highQualityVideo` parameter set to true - _Default: false_
+- **maxVideoHeight** - Number to represent the maximum height of downloaded videos in pixels. Must be used in conjunction with `maxQualityVideo` parameter set to true. Suggested values are 2160 and 1440 - _Default: 2160_

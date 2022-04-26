@@ -42,15 +42,20 @@ class RssService {
           ? { itunesEpisode: Number(RegExp.$1) }
           : {};
 
+      const youtubeUrl = `https://youtu.be/${video.id}`;
+      const videoUrl = `${config.hostname}/video/${video.id}`;
+
+      const description = `${video.description.trim()}\n\n${youtubeUrl}`;
+
       const itunesDuration = video.duration;
 
       rssFeed.addItem({
         title: title,
         itunesTitle: title,
-        description: video.description,
+        description,
         date: new Date(video.date),
-        enclosure: { url: `${config.hostname}/video/${video.id}`, type: 'video/mp4' },
-        url: `https://www.youtube.com/watch?v=${video.id}`,
+        enclosure: { url: videoUrl, type: 'video/mp4' },
+        url: youtubeUrl,
         itunesDuration,
         ...episodeNumber,
       });

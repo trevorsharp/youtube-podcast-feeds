@@ -80,6 +80,7 @@ class VideoService {
       './downloadVideos.sh',
       config.downloadsFilePath,
       config.maxQualityVideo.toString(),
+      config.maxVideoHeight.toString(),
       fs.existsSync(config.cookiesFilePath) ? config.cookiesFilePath : '',
     ]);
 

@@ -1,6 +1,6 @@
 {
   "name": "youtube-podcast-feeds",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "main": "index.js",
   "author": "Trevor Sharp <sharp.trevor@me.com>",
   "license": "MIT",
