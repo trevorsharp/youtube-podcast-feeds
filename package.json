@@ -13,7 +13,7 @@
     "config": "^3.3.7",
     "express": "^4.17.2",
     "googleapis": "^92.0.0",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "moment-duration-format": "^2.3.2",
     "node-cache": "^5.1.2",
     "podcast": "^2.0.0"
