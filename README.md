@@ -106,9 +106,9 @@ If you want to download YouTube content that requires user authentication to dow
 
 To generate this file:
 
-1. Download the `Get cookies.txt` Chrome Extension found [here](https://chrome.google.com/webstore/detail/get-cookiestxt/bgaddhkoddajcdgocldbbfleckgcbcid)
+1. To get a cookies.txt file, download a browser extension (such as [this one](https://chrome.google.com/webstore/detail/open-cookiestxt/gdocmgbfkjnnpapoeobnolbbkoibbcif) for Chrome)
 2. Log in to YouTube
-3. With a YouTube tab open, open the `Get cookies.txt` extension and click the export button
+3. With a YouTube tab open, open the cookies.txt extension and click the export/download button
 4. Rename the downloaded file to `cookies.txt`
 
 ## Data Directory Structure
