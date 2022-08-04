@@ -1,6 +1,8 @@
 # youtube-podcast-feeds
 
-Create podcast feeds from YouTube videos
+### Looking for something quick and easy? - Check out [youtubecast.com](https://youtubecast.com)
+
+Create podcast feeds for YouTube channels, users and playlists
 
 ## Features
 
