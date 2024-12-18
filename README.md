@@ -1,6 +1,6 @@
-# youtube-podcast-feeds
+### ⚠️ This project is no longer in active development. See [YouTubeCast](https://github.com/trevorsharp/youtubecast) for an alternative.
 
-### Looking for something quick and easy? - Check out [youtubecast.com](https://youtubecast.com)
+# youtube-podcast-feeds
 
 Create podcast feeds for YouTube channels, users and playlists
 
